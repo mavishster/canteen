@@ -19,7 +19,8 @@
                 <li class="nav-item"><a class="nav-link" href="{{ route('manager') }}">Manager</a></li>
             @endhasanyrole
             @hasanyrole('admin|super-admin')
-                <li class="nav-item"><a class="nav-link" href="{{ route('admin') }}">Admin</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('admin.students') }}">Students</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('admin.products') }}">Products</a></li>
             @endhasanyrole
         </ul>
         <span class="navbar-text me-3">{{ auth()->user()->name }}</span>
