@@ -6,9 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\School;
+use App\Models\StockMovement;
+use App\Services\StockService;
 use App\Support\Money;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Validation\ValidationException;
+use InvalidArgumentException;
 
 class ProductController extends Controller
 {
@@ -26,7 +30,7 @@ class ProductController extends Controller
         return view('admin.products.index', compact('products', 'categories', 'currency'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, StockService $stock)
     {
         $schoolId = $request->user()->school_id;
 
@@ -38,6 +42,7 @@ class ProductController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'category' => ['nullable', 'string', 'max:100'],
             'price' => ['required', 'numeric', 'min:0.01', 'max:100000000'],
+            'stock' => ['nullable', 'integer', 'min:0', 'max:1000000'],
         ]);
 
         $currency = School::findOrFail($schoolId)->currency;
@@ -47,12 +52,21 @@ class ProductController extends Controller
             ? Category::firstOrCreate(['school_id' => $schoolId, 'name' => trim($data['category'])])
             : null;
 
-        Product::create([
+        // A starting stock figure turns tracking on; leaving it empty means "not tracked"
+        $tracked = filled($data['stock'] ?? null);
+
+        $product = Product::create([
             'school_id' => $schoolId,
             'category_id' => $category?->id,
             'name' => $data['name'],
             'price' => $price,
+            'track_stock' => $tracked,
+            'stock' => 0,
         ]);
+
+        if ($tracked && (int) $data['stock'] > 0) {
+            $stock->receive($product, (int) $data['stock'], $request->user()->id, 'Opening stock');
+        }
 
         return redirect()->route('admin.products')->with('status', 'Product added.');
     }
@@ -75,6 +89,61 @@ class ProductController extends Controller
 
         return redirect()->route('admin.products')
             ->with('status', $product->is_active ? 'Product shown on the till.' : 'Product hidden from the till.');
+    }
+
+    // ----------------------------------------------------------------- stock
+
+    public function tracking(Product $product)
+    {
+        $product->update(['track_stock' => ! $product->track_stock]);
+
+        return redirect()->route('admin.products')->with(
+            'status',
+            $product->track_stock ? 'Stock tracking turned on. Add stock with Receive or Set.' : 'Stock tracking turned off.'
+        );
+    }
+
+    public function receive(Request $request, Product $product, StockService $stock)
+    {
+        $data = $request->validate([
+            'quantity' => ['required', 'integer', 'min:1', 'max:1000000'],
+            'note' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        try {
+            $stock->receive($product, (int) $data['quantity'], $request->user()->id, $data['note'] ?? null);
+        } catch (InvalidArgumentException $e) {
+            return back()->withErrors(['stock' => $e->getMessage()]);
+        }
+
+        return redirect()->route('admin.products')->with('status', "Received {$data['quantity']} × {$product->name}.");
+    }
+
+    public function count(Request $request, Product $product, StockService $stock)
+    {
+        $data = $request->validate([
+            'counted' => ['required', 'integer', 'min:0', 'max:1000000'],
+            'note' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        try {
+            $stock->count($product, (int) $data['counted'], $request->user()->id, $data['note'] ?? null);
+        } catch (InvalidArgumentException $e) {
+            return back()->withErrors(['stock' => $e->getMessage()]);
+        }
+
+        return redirect()->route('admin.products')->with('status', "{$product->name}: stock set to {$data['counted']}.");
+    }
+
+    public function movements()
+    {
+        Paginator::useBootstrapFive();
+
+        $movements = StockMovement::with(['product:id,name', 'user:id,name', 'school:id,timezone'])
+            ->latest('id')
+            ->paginate(30);
+
+        return view('admin.stock.index', compact('movements'));
     }
 
     private function minorPrice(string|int|float $value, string $currency): int

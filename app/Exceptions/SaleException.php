@@ -20,4 +20,12 @@ class SaleException extends RuntimeException
     {
         return new self('invalid_product', 'A product in the cart is no longer available. Please start the sale again.');
     }
+
+    public static function outOfStock(string $name, int $available): self
+    {
+        return new self(
+            'out_of_stock',
+            $available > 0 ? "{$name}: only {$available} left." : "{$name} is out of stock."
+        );
+    }
 }

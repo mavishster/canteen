@@ -46,6 +46,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/admin/products', [ProductController::class, 'store'])->name('admin.products.store');
         Route::post('/admin/products/{product}', [ProductController::class, 'update'])->name('admin.products.update');
         Route::post('/admin/products/{product}/toggle', [ProductController::class, 'toggle'])->name('admin.products.toggle');
+        Route::post('/admin/products/{product}/tracking', [ProductController::class, 'tracking'])->name('admin.products.tracking');
+        Route::post('/admin/products/{product}/stock/receive', [ProductController::class, 'receive'])->name('admin.products.receive');
+        Route::post('/admin/products/{product}/stock/count', [ProductController::class, 'count'])->name('admin.products.count');
+        Route::get('/admin/stock', [ProductController::class, 'movements'])->name('admin.stock');
 
         Route::get('/admin/settings', [SchoolSettingsController::class, 'edit'])->name('admin.settings');
         Route::post('/admin/settings', [SchoolSettingsController::class, 'update'])->name('admin.settings.update');

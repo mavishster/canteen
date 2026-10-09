@@ -14,6 +14,8 @@ class Product extends Model
     protected $casts = [
         'price' => 'integer',
         'is_active' => 'boolean',
+        'track_stock' => 'boolean',
+        'stock' => 'integer',
     ];
 
     public function category()

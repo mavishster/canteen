@@ -16,12 +16,14 @@ class SaleService
         private CardService $cards,
         private LedgerService $ledger,
         private RuleService $rules,
+        private StockService $stock,
     ) {
     }
 
     /**
      * One tap = one sale. Prices always come from the database, never from the caller.
      * Safe to retry: the same $key returns the original sale and never charges twice.
+     * The balance, the stock and the sale record change together or not at all.
      *
      * @param  array<int, array{product_id:int, quantity:int}>  $items
      */
@@ -57,7 +59,10 @@ class SaleService
             // Limits, bans and buying hours. Throws RuleException (a SaleException with a reason).
             $this->rules->check(School::findOrFail($schoolId), $card->student, $locked, $lines, $total);
 
-            // Throws InsufficientBalanceException: the whole transaction rolls back, nothing is recorded
+            // Locks the products and deducts stock. Throws out_of_stock before any money moves.
+            $this->stock->deductForSale($schoolId, $lines, "sale:{$key}", $cashierId);
+
+            // Throws InsufficientBalanceException: the whole transaction rolls back, stock included
             $entry = $this->ledger->purchase($locked, $total, "sale:{$key}", [
                 'description' => 'Canteen purchase',
                 'created_by' => $cashierId,
@@ -92,7 +97,7 @@ class SaleService
                 throw SaleException::invalidProduct();
             }
 
-            $wanted[$id] = ($wanted[$id] ?? 0) + $qty;
+            $wanted[$id] = ($wanted[$id] ?? 0) + $qty;   // the same product twice becomes one line
         }
 
         if (! $wanted) {

@@ -30,6 +30,8 @@ class TillController extends Controller
                     'price' => $p->price,
                     'price_formatted' => Money::format($p->price, $currency),
                     'category' => $p->category?->name ?? 'Other',
+                    'track_stock' => $p->track_stock,
+                    'stock' => $p->stock,
                 ])
                 ->values()
             : collect();
@@ -84,6 +86,10 @@ class TillController extends Controller
                 'quantity' => $i->quantity,
                 'line_total_formatted' => Money::format($i->line_total, $currency),
             ])->values(),
+            // Fresh stock for the tracked products just sold, so the till screen stays accurate
+            'stock' => Product::whereIn('id', $sale->items->pluck('product_id'))
+                ->where('track_stock', true)
+                ->pluck('stock', 'id'),
         ]);
     }
 

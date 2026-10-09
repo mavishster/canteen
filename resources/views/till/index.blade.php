@@ -39,7 +39,10 @@
                         <div class="display-6 mb-2" id="payTotal"></div>
                         <p class="fs-3 mb-3">Tap the card</p>
                         <form id="tapForm" autocomplete="off">
-                            <input id="tapUid" class="form-control text-center" placeholder="Card number" autocomplete="off">
+                            <div class="input-group input-group-lg">
+                                <input id="tapUid" class="form-control text-center" placeholder="Card number" autocomplete="off">
+                                <button type="submit" class="btn btn-primary">Charge</button>
+                            </div>
                         </form>
                         <button type="button" class="btn btn-link mt-3" data-bs-dismiss="modal">Cancel</button>
                     </div>
@@ -107,6 +110,8 @@ document.addEventListener('DOMContentLoaded', function () {
         return 'sale-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
     }
 
+    function maxQty(p) { return p.track_stock ? Math.max(p.stock, 0) : 99; }
+
     function cartIds() { return Object.keys(cart); }
 
     function cartTotal() {
@@ -134,13 +139,24 @@ document.addEventListener('DOMContentLoaded', function () {
         PRODUCTS.forEach(function (p) {
             if (category !== 'All' && p.category !== category) { return; }
 
-            var $col = $('<div class="col-6 col-md-4 col-xl-3"></div>');
-            $('<button type="button" class="btn btn-outline-primary w-100 js-add" style="min-height: 90px"></button>')
+            var soldOut = p.track_stock && p.stock <= 0;
+
+            var $btn = $('<button type="button" class="btn w-100 js-add" style="min-height: 90px"></button>')
+                .addClass(soldOut ? 'btn-outline-secondary' : 'btn-outline-primary')
+                .prop('disabled', soldOut)
                 .attr('data-id', p.id)
                 .append($('<div class="fw-semibold"></div>').text(p.name))
-                .append($('<div class="small"></div>').text(p.price_formatted))
-                .appendTo($col);
-            $grid.append($col);
+                .append($('<div class="small"></div>').text(p.price_formatted));
+
+            if (p.track_stock) {
+                $btn.append(
+                    $('<div class="small"></div>')
+                        .addClass(soldOut ? 'text-danger' : 'text-muted')
+                        .text(soldOut ? 'Out of stock' : p.stock + ' left')
+                );
+            }
+
+            $('<div class="col-6 col-md-4 col-xl-3"></div>').append($btn).appendTo($grid);
         });
     }
 
@@ -154,18 +170,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
         ids.forEach(function (id) {
             var p = byId[id];
+            var atMax = p.track_stock && cart[id] >= p.stock;
+            var sub = money(p.price * cart[id]) + (atMax ? ' · all that is in stock' : '');
             var $li = $('<li class="list-group-item d-flex justify-content-between align-items-center"></li>');
 
             $li.append(
                 $('<div></div>')
                     .append($('<div></div>').text(p.name))
-                    .append($('<div class="small text-muted"></div>').text(money(p.price * cart[id])))
+                    .append($('<div class="small text-muted"></div>').text(sub))
             );
             $li.append(
                 $('<div class="btn-group btn-group-sm"></div>')
                     .append($('<button type="button" class="btn btn-outline-secondary js-dec"></button>').attr('data-id', id).text('-'))
                     .append($('<span class="btn btn-light disabled"></span>').text(cart[id]))
-                    .append($('<button type="button" class="btn btn-outline-secondary js-inc"></button>').attr('data-id', id).text('+'))
+                    .append($('<button type="button" class="btn btn-outline-secondary js-inc"></button>').attr('data-id', id).prop('disabled', atMax).text('+'))
             );
             $list.append($li);
         });
@@ -175,9 +193,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function changeQty(id, delta) {
+        var p = byId[id];
         cart[id] = (cart[id] || 0) + delta;
+        if (cart[id] > maxQty(p)) { cart[id] = maxQty(p); }
         if (cart[id] <= 0) { delete cart[id]; }
-        if (cart[id] > 99) { cart[id] = 99; }
         saleKey = null;   // a changed cart is a new sale
         renderCart();
     }
@@ -212,15 +231,25 @@ document.addEventListener('DOMContentLoaded', function () {
                 .appendTo($lines);
         });
 
+        // Fresh stock numbers from the server (other tills may have sold too)
+        $.each(res.stock || {}, function (id, stock) {
+            if (byId[id]) { byId[id].stock = stock; }
+        });
+
         cart = {};
         saleKey = null;
+        renderProducts();
         renderCart();
         show('ok');
     }
 
     function onRejected(xhr) {
+        console.error('Checkout failed', xhr.status, xhr.responseText);
+
         var message = (xhr.responseJSON && xhr.responseJSON.message)
-            || (xhr.status === 0 ? 'No connection to the server. Please try again.' : 'Something went wrong. Please try again.');
+            || (xhr.status === 0
+                ? 'No connection to the server. Please try again.'
+                : 'Something went wrong (error ' + xhr.status + '). Please try again.');
 
         $('#errMessage').text(message);
         show('err');   // the sale key is kept: a retry of the same sale can never charge twice
@@ -252,11 +281,11 @@ document.addEventListener('DOMContentLoaded', function () {
         payModal.show();
     });
 
-    // The reader "types" the card number and presses Enter, which submits this form
+    // The reader "types" the card number and presses Enter; the Charge button does the same by hand
     $('#tapForm').on('submit', function (e) {
         e.preventDefault();
 
-        var uid = String($('#tapUid').val() || '').trim();
+        var uid = $.trim($('#tapUid').val());
         if (!uid || state !== 'waiting') { return; }
 
         show('busy');
