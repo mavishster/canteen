@@ -285,7 +285,7 @@ document.addEventListener('DOMContentLoaded', function () {
     $('#tapForm').on('submit', function (e) {
         e.preventDefault();
 
-        var uid = $.trim($('#tapUid').val());
+        var uid = String($('#tapUid').val() || '').trim();
         if (!uid || state !== 'waiting') { return; }
 
         show('busy');
