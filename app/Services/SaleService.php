@@ -17,8 +17,7 @@ class SaleService
         private LedgerService $ledger,
         private RuleService $rules,
         private StockService $stock,
-    ) {
-    }
+    ) {}
 
     /**
      * One tap = one sale. Prices always come from the database, never from the caller.
@@ -36,7 +35,11 @@ class SaleService
             // Same row lock the ledger uses: two tills on one account wait their turn here
             $locked = Account::withoutGlobalScopes()->lockForUpdate()->findOrFail($account->id);
 
+            $lines = $this->priceLines($schoolId, $items);
+            $total = array_sum(array_column($lines, 'line_total'));
+
             $existing = Sale::withoutGlobalScopes()
+                ->with('items')
                 ->where('school_id', $schoolId)
                 ->where('idempotency_key', $key)
                 ->first();
@@ -46,11 +49,13 @@ class SaleService
                     throw new InvalidArgumentException("Sale key '{$key}' was already used for a different account.");
                 }
 
+                $sameCart = $this->sameCart($existing, $lines);
+                if (! $sameCart) {
+                    throw new InvalidArgumentException("Sale key '{$key}' was already used for a different sale.");
+                }
+
                 return $existing->load(['items', 'student', 'ledgerEntry']);
             }
-
-            $lines = $this->priceLines($schoolId, $items);
-            $total = array_sum(array_column($lines, 'line_total'));
 
             if ($total <= 0) {
                 throw SaleException::invalidProduct();
@@ -130,5 +135,31 @@ class SaleService
         }
 
         return $lines;
+    }
+
+    /** True when the retry is the same sale, not a different cart using the same key. */
+    private function sameCart(Sale $existing, array $lines): bool
+    {
+        $actual = $existing->items
+            ->groupBy('product_id')
+            ->map(fn ($items) => [
+                'product_id' => (int) $items->first()->product_id,
+                'quantity' => (int) $items->sum('quantity'),
+            ])
+            ->sortBy('product_id')
+            ->values()
+            ->all();
+
+        $expected = collect($lines)
+            ->groupBy('product_id')
+            ->map(fn ($items) => [
+                'product_id' => (int) $items->first()['product_id'],
+                'quantity' => (int) $items->sum('quantity'),
+            ])
+            ->sortBy('product_id')
+            ->values()
+            ->all();
+
+        return $actual === $expected && (int) $existing->total === (int) array_sum(array_column($lines, 'line_total'));
     }
 }

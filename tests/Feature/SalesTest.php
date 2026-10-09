@@ -112,6 +112,23 @@ it('does not charge twice when the same sale is retried', function () {
         ->and(LedgerEntry::where('account_id', $student->account->id)->count())->toBe(2);
 });
 
+it('refuses to reuse a sale idempotency key for a different cart', function () {
+    [$school, $student, $uid] = saleSetup(10000);
+    $cola = saleProduct($school, 'Cola', 350);
+    $water = saleProduct($school, 'Water', 100);
+
+    $first = app(SaleService::class)->checkout($school->id, null, $uid, [
+        ['product_id' => $cola->id, 'quantity' => 1],
+    ], 'different-cart');
+
+    expect(fn () => app(SaleService::class)->checkout($school->id, null, $uid, [
+        ['product_id' => $water->id, 'quantity' => 1],
+    ], 'different-cart'))->toThrow(InvalidArgumentException::class)
+        ->and(Sale::count())->toBe(1)
+        ->and($first->total)->toBe(350)
+        ->and($student->account->refresh()->balance)->toBe(9650);
+});
+
 it('records nothing when the balance is too low', function () {
     [$school, $student, $uid] = saleSetup(300);
     $rice = saleProduct($school, 'Fried rice', 500);
