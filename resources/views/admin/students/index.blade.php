@@ -62,7 +62,7 @@
             @php $card = $student->cards->first(); @endphp
             <tr>
                 <td>{{ $student->student_code }}</td>
-                <td>{{ $student->name }}</td>
+                <td><a href="{{ route('admin.students.rules', $student) }}">{{ $student->name }}</a></td>
                 <td>{{ $student->grade ?? '–' }}</td>
                 <td class="text-end">{{ \App\Support\Money::format($student->account?->balance ?? 0, $student->school->currency) }}</td>
                 <td>

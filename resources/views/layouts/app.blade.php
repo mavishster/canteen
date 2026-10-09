@@ -21,6 +21,7 @@
             @hasanyrole('admin|super-admin')
                 <li class="nav-item"><a class="nav-link" href="{{ route('admin.students') }}">Students</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('admin.products') }}">Products</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('admin.settings') }}">Settings</a></li>
             @endhasanyrole
         </ul>
         <span class="navbar-text me-3">{{ auth()->user()->name }}</span>

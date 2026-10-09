@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\SchoolSettingsController;
 use App\Http\Controllers\Admin\StudentController;
+use App\Http\Controllers\Admin\StudentRulesController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TillController;
 use Illuminate\Support\Facades\Route;
@@ -33,9 +35,17 @@ Route::middleware('auth')->group(function () {
         Route::post('/admin/cards/{card}/block', [StudentController::class, 'blockCard'])->name('admin.cards.block');
         Route::post('/admin/cards/{card}/unblock', [StudentController::class, 'unblockCard'])->name('admin.cards.unblock');
 
+        Route::get('/admin/students/{student}/rules', [StudentRulesController::class, 'show'])->name('admin.students.rules');
+        Route::post('/admin/students/{student}/limits', [StudentRulesController::class, 'limits'])->name('admin.students.limits');
+        Route::post('/admin/students/{student}/bans', [StudentRulesController::class, 'addBan'])->name('admin.students.bans');
+        Route::post('/admin/bans/{ban}/delete', [StudentRulesController::class, 'removeBan'])->name('admin.bans.delete');
+
         Route::get('/admin/products', [ProductController::class, 'index'])->name('admin.products');
         Route::post('/admin/products', [ProductController::class, 'store'])->name('admin.products.store');
         Route::post('/admin/products/{product}', [ProductController::class, 'update'])->name('admin.products.update');
         Route::post('/admin/products/{product}/toggle', [ProductController::class, 'toggle'])->name('admin.products.toggle');
+
+        Route::get('/admin/settings', [SchoolSettingsController::class, 'edit'])->name('admin.settings');
+        Route::post('/admin/settings', [SchoolSettingsController::class, 'update'])->name('admin.settings.update');
     });
 });

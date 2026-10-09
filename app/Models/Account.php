@@ -10,7 +10,12 @@ class Account extends Model
     use BelongsToSchool;
 
     protected $guarded = [];
-    protected $casts = ['balance' => 'integer'];
+
+    protected $casts = [
+        'balance' => 'integer',
+        'daily_limit' => 'integer',
+        'weekly_limit' => 'integer',
+    ];
 
     public function student()
     {
