@@ -4,7 +4,9 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SchoolSettingsController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\StudentRulesController;
+use App\Http\Controllers\Admin\TopUpController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Dev\PaymentPageController;
 use App\Http\Controllers\TillController;
 use Illuminate\Support\Facades\Route;
 
@@ -47,5 +49,14 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/admin/settings', [SchoolSettingsController::class, 'edit'])->name('admin.settings');
         Route::post('/admin/settings', [SchoolSettingsController::class, 'update'])->name('admin.settings.update');
+
+        Route::get('/admin/topups', [TopUpController::class, 'index'])->name('admin.topups');
+        Route::post('/admin/topups', [TopUpController::class, 'store'])->name('admin.topups.store');
+
+        // Pretend bank page for the fake gateway: these routes do not exist in production
+        if (! app()->isProduction()) {
+            Route::get('/dev/pay/{ref}', [PaymentPageController::class, 'show'])->name('dev.pay');
+            Route::post('/dev/pay/{ref}/{outcome}', [PaymentPageController::class, 'complete'])->name('dev.pay.complete');
+        }
     });
 });
