@@ -63,3 +63,5 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__ . '/manager.php';
+
+require __DIR__ . '/parents.php';
