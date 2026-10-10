@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'sis' => [
+        'userinfo_url' => env('SIS_USERINFO_URL'),
+        'parent_id_claim' => env('SIS_PARENT_ID_CLAIM', 'sub'),
+    ],
+
 ];

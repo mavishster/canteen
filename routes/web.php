@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\MealPlanController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SchoolSettingsController;
 use App\Http\Controllers\Admin\StudentController;
@@ -7,6 +8,7 @@ use App\Http\Controllers\Admin\StudentRulesController;
 use App\Http\Controllers\Admin\TopUpController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Dev\PaymentPageController;
+use App\Http\Controllers\MealDistributionController;
 use App\Http\Controllers\TillController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,6 +25,8 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:cashier|manager|admin|super-admin')->group(function () {
         Route::get('/till', [TillController::class, 'index'])->name('till');
         Route::post('/till/checkout', [TillController::class, 'checkout'])->name('till.checkout');
+        Route::get('/till/meals', [MealDistributionController::class, 'index'])->name('till.meals');
+        Route::post('/till/meals/collect', [MealDistributionController::class, 'collect'])->name('till.meals.collect');
     });
 
     Route::view('/manager', 'placeholder', ['title' => 'Manager'])
@@ -56,6 +60,12 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/admin/topups', [TopUpController::class, 'index'])->name('admin.topups');
         Route::post('/admin/topups', [TopUpController::class, 'store'])->name('admin.topups.store');
+
+        Route::get('/admin/meal-plans', [MealPlanController::class, 'index'])->name('admin.meal-plans');
+        Route::post('/admin/meal-types', [MealPlanController::class, 'storeType'])->name('admin.meal-types.store');
+        Route::post('/admin/meal-plans', [MealPlanController::class, 'store'])->name('admin.meal-plans.store');
+        Route::post('/admin/meal-types/{mealType}/toggle', [MealPlanController::class, 'toggleType'])->name('admin.meal-types.toggle');
+        Route::post('/admin/meal-plans/{mealPlan}/toggle', [MealPlanController::class, 'toggle'])->name('admin.meal-plans.toggle');
 
         // Pretend bank page for the fake gateway: these routes do not exist in production
         if (! app()->isProduction()) {

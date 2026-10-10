@@ -14,6 +14,7 @@
         <ul class="navbar-nav me-auto">
             @hasanyrole('cashier|manager|admin|super-admin')
                 <li class="nav-item"><a class="nav-link" href="{{ route('till') }}">Till</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('till.meals') }}">Meal distribution</a></li>
             @endhasanyrole
             @hasanyrole('manager|admin|super-admin')
                 <li class="nav-item"><a class="nav-link" href="{{ route('manager') }}">Manager</a></li>
@@ -22,6 +23,7 @@
                 <li class="nav-item"><a class="nav-link" href="{{ route('admin.students') }}">Students</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('admin.products') }}">Products</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('admin.topups') }}">Top-ups</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('admin.meal-plans') }}">Meal plans</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('admin.settings') }}">Settings</a></li>
             @endhasanyrole
         </ul>

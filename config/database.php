@@ -64,6 +64,25 @@ return [
             ]) : [],
         ],
 
+        'sis' => [
+            'driver' => 'mysql',
+            'url' => env('SIS_DB_URL'),
+            'host' => env('SIS_DB_HOST', '127.0.0.1'),
+            'port' => env('SIS_DB_PORT', '3306'),
+            'database' => env('SIS_DB_DATABASE'),
+            'username' => env('SIS_DB_USERNAME'),
+            'password' => env('SIS_DB_PASSWORD'),
+            'charset' => env('SIS_DB_CHARSET', 'utf8mb4'),
+            'collation' => env('SIS_DB_COLLATION', 'utf8mb4_unicode_ci'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                Mysql::ATTR_SSL_CA => env('SIS_MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
         'mariadb' => [
             'driver' => 'mariadb',
             'url' => env('DB_URL'),
