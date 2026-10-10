@@ -166,6 +166,7 @@ class RuleService
             // Safe from races: the caller holds the account row lock
             $spent = (int) Sale::withoutGlobalScopes()
                 ->where('account_id', $account->id)
+                ->whereNull('voided_at')
                 ->where('created_at', '>=', $since)
                 ->sum('total');
 

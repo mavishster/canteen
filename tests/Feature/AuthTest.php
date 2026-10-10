@@ -50,7 +50,7 @@ it('lets a manager open the till and manager pages but not admin', function () {
     $this->actingAs(userWithRole('manager'));
 
     $this->get('/till')->assertOk();
-    $this->get('/manager')->assertOk();
+    $this->get('/manager')->assertRedirect('/manager/reports/daily');
     $this->get('/admin')->assertForbidden();
 });
 
@@ -58,7 +58,7 @@ it('lets an admin open every page', function () {
     $this->actingAs(userWithRole('admin'));
 
     $this->get('/till')->assertOk();
-    $this->get('/manager')->assertOk();
+    $this->get('/manager')->assertRedirect('/manager/reports/daily');
     $this->get('/admin')->assertRedirect('/admin/students');
 });
 

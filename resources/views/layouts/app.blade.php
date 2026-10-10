@@ -14,6 +14,7 @@
         <ul class="navbar-nav me-auto">
             @hasanyrole('cashier|manager|admin|super-admin')
                 <li class="nav-item"><a class="nav-link" href="{{ route('till') }}">Till</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('till.sales') }}">Sales</a></li>
             @endhasanyrole
             @hasanyrole('manager|admin|super-admin')
                 <li class="nav-item"><a class="nav-link" href="{{ route('manager') }}">Manager</a></li>

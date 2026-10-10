@@ -25,9 +25,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/till/checkout', [TillController::class, 'checkout'])->name('till.checkout');
     });
 
-    Route::view('/manager', 'placeholder', ['title' => 'Manager'])
-        ->middleware('role:manager|admin|super-admin')->name('manager');
-
     Route::middleware('role:admin|super-admin')->group(function () {
         Route::redirect('/admin', '/admin/students')->name('admin');
 
@@ -64,3 +61,5 @@ Route::middleware('auth')->group(function () {
         }
     });
 });
+
+require __DIR__ . '/manager.php';
