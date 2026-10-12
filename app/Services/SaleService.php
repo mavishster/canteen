@@ -2,11 +2,14 @@
 
 namespace App\Services;
 
+use App\Exceptions\CardException;
 use App\Exceptions\SaleException;
 use App\Models\Account;
+use App\Models\Card;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\School;
+use App\Models\Student;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -29,9 +32,54 @@ class SaleService
     public function checkout(int $schoolId, ?int $cashierId, string $uid, array $items, string $key): Sale
     {
         $card = $this->cards->resolve($uid, $schoolId);   // throws CardException with a clear reason
-        $account = $card->student->account;
 
-        return DB::transaction(function () use ($schoolId, $cashierId, $items, $key, $account, $card) {
+        return $this->process($schoolId, $cashierId, $card->student, $items, $key, 'card');
+    }
+
+    /**
+     * A sale where the cashier identified the student by number (the till has already asked the cashier to confirm).
+     * Every rule of a card sale applies, plus the checks in assertManualAllowed().
+     *
+     * @param  array<int, array{product_id:int, quantity:int}>  $items
+     */
+    public function checkoutForStudent(int $schoolId, ?int $cashierId, Student $student, array $items, string $key): Sale
+    {
+        $this->assertManualAllowed($schoolId, $student);
+
+        return $this->process($schoolId, $cashierId, $student, $items, $key, 'manual');
+    }
+
+    /** Refuses a manual sale that could never go through, so the till does not ask for a pointless confirmation. */
+    public function assertManualAllowed(int $schoolId, Student $student): void
+    {
+        $school = School::findOrFail($schoolId);
+
+        if (! data_get($school->settings, 'till.manual_entry', true)) {
+            throw new SaleException('manual_disabled', 'Selling by student number is switched off for this school. Please use the card.');
+        }
+
+        if ((int) $student->school_id !== $schoolId) {
+            throw CardException::unknownCard();   // never sell across schools
+        }
+
+        if (! $student->is_active) {
+            throw CardException::studentInactive();
+        }
+
+        // A parent who blocked the card has stopped payments: a typed number must not get around that
+        $card = $this->cards->currentCard($student);
+
+        if ($card && $card->status === Card::BLOCKED) {
+            throw CardException::cardBlocked();
+        }
+    }
+
+    /** @param  array<int, array{product_id:int, quantity:int}>  $items */
+    private function process(int $schoolId, ?int $cashierId, Student $student, array $items, string $key, string $identifiedBy): Sale
+    {
+        $account = $student->account;
+
+        return DB::transaction(function () use ($schoolId, $cashierId, $items, $key, $account, $student, $identifiedBy) {
             // Same row lock the ledger uses: two tills on one account wait their turn here
             $locked = Account::withoutGlobalScopes()->lockForUpdate()->findOrFail($account->id);
 
@@ -62,7 +110,7 @@ class SaleService
             }
 
             // Limits, bans and buying hours. Throws RuleException (a SaleException with a reason).
-            $this->rules->check(School::findOrFail($schoolId), $card->student, $locked, $lines, $total);
+            $this->rules->check(School::findOrFail($schoolId), $student, $locked, $lines, $total);
 
             // Locks the products and deducts stock. Throws out_of_stock before any money moves.
             $this->stock->deductForSale($schoolId, $lines, "sale:{$key}", $cashierId);
@@ -76,8 +124,9 @@ class SaleService
             $sale = Sale::create([
                 'school_id' => $schoolId,
                 'account_id' => $locked->id,
-                'student_id' => $card->student_id,
+                'student_id' => $student->id,
                 'cashier_id' => $cashierId,
+                'identified_by' => $identifiedBy,
                 'ledger_entry_id' => $entry->id,
                 'total' => $total,
                 'idempotency_key' => $key,

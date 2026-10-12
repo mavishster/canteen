@@ -11,6 +11,10 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
+        if (! config('sis.allow_local_parent_login', true)) {
+            return response()->json(['message' => 'Please sign in with your school account.'], 404);
+        }
+
         $data = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],

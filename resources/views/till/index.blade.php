@@ -37,10 +37,11 @@
 
                     <div class="pay-state" id="st-waiting">
                         <div class="display-6 mb-2" id="payTotal"></div>
-                        <p class="fs-3 mb-3">Tap the card</p>
+                        <p class="fs-3 mb-1">Tap the card</p>
+                        <p class="text-muted mb-3">or type the student number</p>
                         <form id="tapForm" autocomplete="off">
                             <div class="input-group input-group-lg">
-                                <input id="tapUid" class="form-control text-center" placeholder="Card number" autocomplete="off">
+                                <input id="tapUid" class="form-control text-center" placeholder="Card or student number" autocomplete="off">
                                 <button type="submit" class="btn btn-primary">Charge</button>
                             </div>
                         </form>
@@ -52,9 +53,20 @@
                         <p class="fs-4 mt-3 mb-0">Processing…</p>
                     </div>
 
+                    <div class="pay-state d-none" id="st-confirm">
+                        <p class="text-muted mb-1">Student number</p>
+                        <div class="display-6" id="confirmCode"></div>
+                        <div class="fs-3 mt-2" id="confirmName"></div>
+                        <div class="fs-5 text-muted mb-4" id="confirmGrade"></div>
+                        <p class="mb-4">Charge <strong id="confirmTotal"></strong> to this student?</p>
+                        <button type="button" class="btn btn-success btn-lg" id="confirmBtn">Yes, charge</button>
+                        <button type="button" class="btn btn-link" id="confirmBackBtn">No, go back</button>
+                    </div>
+
                     <div class="pay-state d-none" id="st-ok">
                         <div class="text-success display-3">✓</div>
                         <div class="fs-3" id="okStudent"></div>
+                        <div class="small text-muted" id="okVia"></div>
                         <ul class="list-unstyled text-start mx-auto my-3" id="okLines" style="max-width: 320px"></ul>
                         <div class="d-flex justify-content-between fs-5 mx-auto" style="max-width: 320px">
                             <span>Paid</span><strong id="okTotal"></strong>
@@ -96,6 +108,8 @@ document.addEventListener('DOMContentLoaded', function () {
     var category = 'All';
     var state = 'waiting';
     var modalOpen = false;
+    var lastInput = null;     // what was typed or tapped
+    var pendingCode = null;   // the student number the cashier is asked to confirm
 
     var payModalEl = document.getElementById('payModal');
     var payModal = new bootstrap.Modal(payModalEl);
@@ -218,8 +232,38 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Sends the sale. confirmStudent is only set after the cashier confirmed a typed student number.
+    function send(uid, confirmStudent) {
+        show('busy');
+        $.ajax({
+            url: CHECKOUT_URL,
+            method: 'POST',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify({ uid: uid, key: saleKey, items: payload(), confirm_student: confirmStudent || null })
+        }).done(onResponse).fail(onRejected);
+    }
+
+    function onResponse(res) {
+        if (res.confirm) {
+            showConfirm(res);   // a typed student number: nothing has been charged yet
+        } else {
+            onPaid(res);
+        }
+    }
+
+    function showConfirm(res) {
+        pendingCode = res.student.code;
+        $('#confirmCode').text(res.student.code);
+        $('#confirmName').text(res.student.name);
+        $('#confirmGrade').text(res.student.grade ? 'Grade ' + res.student.grade : '');
+        $('#confirmTotal').text(money(cartTotal()));
+        show('confirm');   // no button is focused on purpose: a stray Enter must not confirm
+    }
+
     function onPaid(res) {
         $('#okStudent').text(res.student.name);
+        $('#okVia').text(res.identified_by === 'manual' ? 'Identified by student number' : '');
         $('#okTotal').text(res.total_formatted);
         $('#okBalance').text(res.balance_formatted);
 
@@ -238,6 +282,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         cart = {};
         saleKey = null;
+        pendingCode = null;
         renderProducts();
         renderCart();
         show('ok');
@@ -288,16 +333,16 @@ document.addEventListener('DOMContentLoaded', function () {
         var uid = String($('#tapUid').val() || '').trim();
         if (!uid || state !== 'waiting') { return; }
 
-        show('busy');
-        $.ajax({
-            url: CHECKOUT_URL,
-            method: 'POST',
-            dataType: 'json',
-            contentType: 'application/json',
-            data: JSON.stringify({ uid: uid, key: saleKey, items: payload() })
-        }).done(onPaid).fail(onRejected);
+        lastInput = uid;
+        send(uid, null);
     });
 
+    $('#confirmBtn').on('click', function () {
+        if (state !== 'confirm' || !lastInput || !pendingCode) { return; }
+        send(lastInput, pendingCode);
+    });
+
+    $('#confirmBackBtn').on('click', function () { show('waiting'); });
     $('#retryBtn').on('click', function () { show('waiting'); });
     $('#doneBtn').on('click', function () { payModal.hide(); });
 

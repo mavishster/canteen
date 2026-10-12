@@ -8,6 +8,7 @@ use App\Exceptions\SaleException;
 use App\Models\Product;
 use App\Models\School;
 use App\Services\SaleService;
+use App\Services\StudentLookup;
 use App\Support\Money;
 use Illuminate\Http\Request;
 use InvalidArgumentException;
@@ -39,11 +40,17 @@ class TillController extends Controller
         return view('till.index', compact('products', 'currency'));
     }
 
-    public function checkout(Request $request, SaleService $sales)
+    /**
+     * The box holds a card number (a tap) or a student number (typed). A student number is never charged
+     * straight away: the first answer is {confirm: true, student}, and the cashier's confirmation repeats
+     * the request with confirm_student = that student's number.
+     */
+    public function checkout(Request $request, SaleService $sales, StudentLookup $lookup)
     {
         $data = $request->validate([
             'uid' => ['required', 'string', 'max:40'],
             'key' => ['required', 'string', 'max:64'],
+            'confirm_student' => ['nullable', 'string', 'max:50'],
             'items' => ['required', 'array', 'min:1', 'max:50'],
             'items.*.product_id' => ['required', 'integer'],
             'items.*.quantity' => ['required', 'integer', 'min:1', 'max:99'],
@@ -56,9 +63,37 @@ class TillController extends Controller
         }
 
         $currency = School::findOrFail($user->school_id)->currency;
+        $input = trim($data['uid']);
 
         try {
-            $sale = $sales->checkout($user->school_id, $user->id, $data['uid'], $data['items'], $data['key']);
+            $found = $lookup->identify($user->school_id, $input);
+
+            if ($found['type'] === 'none' && ! $found['looks_like_card']) {
+                return $this->reject('Card or student number not found.', 'unknown_identifier');
+            }
+
+            if ($found['type'] === 'student') {
+                $student = $found['student'];
+
+                // Refuse what could never succeed BEFORE asking the cashier to confirm
+                $sales->assertManualAllowed($user->school_id, $student);
+
+                if (trim((string) ($data['confirm_student'] ?? '')) !== (string) $student->student_code) {
+                    return response()->json([
+                        'confirm' => true,
+                        'student' => [
+                            'name' => $student->name,
+                            'grade' => $student->grade,
+                            'code' => $student->student_code,
+                        ],
+                    ]);
+                }
+
+                $sale = $sales->checkoutForStudent($user->school_id, $user->id, $student, $data['items'], $data['key']);
+            } else {
+                // A card tap, or something shaped like a card that this school does not know (answers "Card not recognised")
+                $sale = $sales->checkout($user->school_id, $user->id, $input, $data['items'], $data['key']);
+            }
         } catch (CardException | SaleException $e) {
             return $this->reject($e->getMessage(), $e->reason);
         } catch (InsufficientBalanceException $e) {
@@ -76,6 +111,7 @@ class TillController extends Controller
         return response()->json([
             'ok' => true,
             'sale_id' => $sale->id,
+            'identified_by' => $sale->identified_by,
             'student' => ['name' => $sale->student->name, 'code' => $sale->student->student_code],
             'total' => $sale->total,
             'total_formatted' => Money::format($sale->total, $currency),

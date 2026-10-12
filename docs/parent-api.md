@@ -24,3 +24,16 @@ Rules of the road:
 - The balance only changes after the bank confirms on the server. Never treat a top-up as done because the bank page closed.
 - A child that is not the parent's returns 404.
 - Errors look like `{"message": "..."}`, with HTTP 401 (not logged in), 403 (not a parent account), 404, 422 or 503.
+
+## Signing in through the school system (SIS)
+In production parents do not use a canteen password. The app signs in to the SIS (its own login API, which returns a token),
+then sends that token here:
+
+`POST /login-sis` with `{sis_token, device_name?}` returns `{token, user, children}`. Use `token` as the Bearer token for every other call.
+- 422 `invalid_token`: the SIS does not accept the token. Sign in to the SIS again.
+- 403 `not_allowed`: not an active parent account. 403 `school_unknown`: the school is not set up yet.
+- 503 `sis_unavailable`: the SIS cannot be reached. Try again later.
+- Any later call can answer 401 `account_disabled`: the SIS says this parent is no longer active (or lost access). Sign in again.
+
+The children list follows the SIS: a child added or removed there appears or disappears here within about 10 minutes.
+`POST /login` (email + password) is only for development and for accounts created by the school admin; it is switched off with `SIS_ALLOW_LOCAL_PARENT_LOGIN=false`.

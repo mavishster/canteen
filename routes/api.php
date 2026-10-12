@@ -34,3 +34,10 @@ Route::prefix('parent')->middleware([\App\Http\Middleware\ForceJsonResponse::cla
         Route::get('/topups/{ref}', [\App\Http\Controllers\ParentApi\TopUpController::class, 'show'])->name('parent.topups.show');
     });
 });
+
+// Parent login through the SIS (see docs/sis-integration.md)
+Route::prefix('parent')->middleware([\App\Http\Middleware\ForceJsonResponse::class])->group(function () {
+    Route::post('/login-sis', [\App\Http\Controllers\ParentApi\SisLoginController::class, 'login'])
+        ->middleware('throttle:10,1')
+        ->name('parent.login-sis');
+});

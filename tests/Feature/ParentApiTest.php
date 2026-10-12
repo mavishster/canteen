@@ -223,7 +223,7 @@ it('cannot remove a ban that belongs to another child', function () {
 
     $this->deleteJson("/api/parent/children/{$student->id}/bans/{$ban->id}")->assertNotFound();
 
-    expect(StudentBan::count())->toBe(1);
+    expect(StudentBan::withoutGlobalScopes()->count())->toBe(1);
 });
 
 // ------------------------------------------------------------------- card
@@ -233,7 +233,7 @@ it('lets a parent block and unblock the card, and the till refuses it while bloc
     Sanctum::actingAs($parent);
 
     $this->postJson("/api/parent/children/{$student->id}/card/block")->assertOk()->assertJsonPath('status', 'blocked');
-    expect(fn () => app(CardService::class)->resolve($uid, $school->id))
+    expect(fn() => app(CardService::class)->resolve($uid, $school->id))
         ->toThrow(\App\Exceptions\CardException::class);
 
     $this->postJson("/api/parent/children/{$student->id}/card/unblock")->assertOk()->assertJsonPath('status', 'active');

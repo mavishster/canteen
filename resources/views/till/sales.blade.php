@@ -31,7 +31,7 @@
             <tr class="{{ $sale->voided_at ? 'text-muted' : '' }}">
                 <td>{{ $sale->id }}</td>
                 <td class="text-nowrap">{{ $sale->created_at->timezone($school->timezone)->format('H:i') }}</td>
-                <td>{{ $sale->student->name }}</td>
+                <td>{{ $sale->student->name }}@if ($sale->identified_by === 'manual') <span class="badge bg-warning text-dark" title="Identified by student number, not by card">manual</span>@endif</td>
                 <td class="small">{{ $sale->items->map(fn ($i) => $i->quantity . '× ' . $i->name)->implode(', ') }}</td>
                 <td class="text-end">{{ $fmt($sale->total) }}</td>
                 <td>{{ $cashiers[$sale->cashier_id] ?? '–' }}</td>

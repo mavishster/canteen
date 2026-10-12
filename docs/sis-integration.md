@@ -39,3 +39,18 @@ Allow the MySQL port only from the canteen server's IP (firewall or VPN), never 
 - Reports, for a person to fix: `no_card`, `invalid_card`, `duplicate_card` (same RFID on two SIS students), `card_in_use`, `card_retired`,
   and `not_in_sis` (active in the canteen but not listed by the SIS: check for a balance before deactivating).
 - Refuses to run when the SIS returns no students at all (assumed outage).
+
+## Parent login (Step 17)
+1. The app signs in to the SIS and gets a SIS token (Sanctum). The canteen never sees the parent's password.
+2. The app sends the token to `POST /api/parent/login-sis`.
+3. The canteen asks the SIS API who owns the token (`SIS_API_URL` + `SIS_API_USER_PATH`, default `/api/user`). Only the `id` in the answer is read:
+   set `SIS_API_USER_WRAPPER` if the id is nested (e.g. `data`) and `SIS_API_USER_ID_FIELD` if it is not called `id`. Use https in production.
+4. Everything else is read from the SIS database (read-only): `users` (must be `user_type = 'parent'`, `user_status = 1`, with a `branch_id` that matches a school's
+   `sis_branch_id`) and `student_parents` (the children). Children are matched to canteen students by `student_code` = SIS student id, inside the parent's school only.
+5. The canteen creates a local parent account (no usable password), links the children, and issues its own token.
+
+Every parent API call re-checks the SIS at most every `SIS_LINK_CACHE_MINUTES` (10). If the SIS says the parent is inactive or gone, all their canteen tokens and child links are removed.
+If the SIS cannot be reached, parents keep working on the saved links for `SIS_LINK_GRACE_MINUTES` (60), then get 503 (fail closed). New logins need the SIS.
+
+Rules: never log or store the SIS token. Parents created by the school admin (Step 15) are not touched by any of this.
+In production set `SIS_ALLOW_LOCAL_PARENT_LOGIN=false` so only the SIS login works. A parent from the SIS appears on the admin Parents page; do not set a password for them there.
