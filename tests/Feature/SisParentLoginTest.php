@@ -251,7 +251,7 @@ it('asks the SIS API with the parent\'s token and reads only the id', function (
 
     expect($user->id)->toBe('42');
 
-    Http::assertSent(fn ($request) => $request->hasHeader('Authorization', 'Bearer parent-sis-token'));
+    Http::assertSent(fn($request) => $request->hasHeader('Authorization', 'Bearer parent-sis-token'));
 });
 
 it('reads the id from the top level when there is no wrapper', function () {
@@ -261,20 +261,24 @@ it('reads the id from the top level when there is no wrapper', function () {
     expect(app(SisHttpAuthClient::class)->userForToken('t')->id)->toBe('7');
 });
 
-it('treats a refused token as unknown and a SIS error as unavailable', function () {
+it('treats a token the SIS refuses as unknown', function () {
     config(['sis.api' => ['base_url' => 'https://sis.test', 'user_path' => '/api/user']]);
-
     Http::fake(['https://sis.test/api/user' => Http::response(['message' => 'Unauthenticated.'], 401)]);
-    expect(app(SisHttpAuthClient::class)->userForToken('bad'))->toBeNull();
 
+    expect(app(SisHttpAuthClient::class)->userForToken('bad'))->toBeNull();
+});
+
+it('is unavailable when the SIS answers with a server error', function () {
+    config(['sis.api' => ['base_url' => 'https://sis.test', 'user_path' => '/api/user']]);
     Http::fake(['https://sis.test/api/user' => Http::response('boom', 500)]);
-    expect(fn () => app(SisHttpAuthClient::class)->userForToken('t'))->toThrow(SisUnavailableException::class);
+
+    expect(fn() => app(SisHttpAuthClient::class)->userForToken('t'))->toThrow(SisUnavailableException::class);
 });
 
 it('is unavailable when the SIS API is not configured', function () {
     config(['sis.api' => ['base_url' => null]]);
 
-    expect(fn () => app(SisHttpAuthClient::class)->userForToken('t'))->toThrow(SisUnavailableException::class);
+    expect(fn() => app(SisHttpAuthClient::class)->userForToken('t'))->toThrow(SisUnavailableException::class);
 });
 
 it('reads parents and their children from the SIS database', function () {
