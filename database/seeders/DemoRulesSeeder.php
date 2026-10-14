@@ -9,6 +9,10 @@ class DemoRulesSeeder extends Seeder
 {
     public function run(): void
     {
+        if (app()->isProduction()) {
+            throw new \RuntimeException('Demo data must never be seeded in production.');
+        }
+
         $school = School::where('code', 'PILOT')->firstOrFail();
 
         $settings = $school->settings ?? [];

@@ -22,6 +22,7 @@
             @hasanyrole('admin|super-admin')
                 <li class="nav-item"><a class="nav-link" href="{{ route('admin.students') }}">Students</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('admin.parents') }}">Parents</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('admin.staff') }}">Staff</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('admin.products') }}">Products</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('admin.topups') }}">Top-ups</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('admin.settings') }}">Settings</a></li>
