@@ -54,7 +54,13 @@ class FakeSisIdentity implements SisAuthClient, SisParentClient
     public function deactivate(string $parentId): void
     {
         $p = $this->parents[$parentId];
-        $this->parents[$parentId] = new SisParent($p->id, $p->name, false, $p->branchId);
+        $this->parents[$parentId] = new SisParent($p->id, $p->name, false, $p->branchId, $p->phone);
+    }
+
+    public function setPhone(string $parentId, ?string $phone): void
+    {
+        $p = $this->parents[$parentId];
+        $this->parents[$parentId] = new SisParent($p->id, $p->name, $p->active, $p->branchId, $phone);
     }
 
     private function checkUp(): void

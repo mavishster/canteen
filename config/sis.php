@@ -38,4 +38,10 @@ return [
 
     // The email + password parent login from Step 15. Set to false in production once the SIS login is live.
     'allow_local_parent_login' => (bool) env('SIS_ALLOW_LOCAL_PARENT_LOGIN', true),
+
+    // Copy each parent's mobile number from the SIS (users.mobile_phone) for SMS alerts.
+    // Turn on ONLY after the SIS administrator has granted the canteen's read-only user:
+    //   GRANT SELECT (mobile_phone) ON <sis_db>.users TO 'canteen_ro'@'<server ip>';
+    // While it is off, the column is never read and numbers set by hand are left alone.
+    'sync_phone' => (bool) env('SIS_SYNC_PHONE', false),
 ];

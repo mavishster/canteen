@@ -164,7 +164,13 @@ class SisParentAccounts
             ->whereNotIn('student_id', $studentIds)
             ->delete();
 
-        $user->forceFill(['name' => $parent->name, 'sis_synced_at' => now()])->save();
+        $attributes = ['name' => $parent->name, 'sis_synced_at' => now()];
+
+        if (config('sis.sync_phone')) {
+            $attributes['phone'] = $parent->phone;   // the SIS is the source of truth: a removed number stops the SMS
+        }
+
+        $user->forceFill($attributes)->save();
 
         return count($studentIds);
     }

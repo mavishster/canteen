@@ -54,3 +54,12 @@ If the SIS cannot be reached, parents keep working on the saved links for `SIS_L
 
 Rules: never log or store the SIS token. Parents created by the school admin (Step 15) are not touched by any of this.
 In production set `SIS_ALLOW_LOCAL_PARENT_LOGIN=false` so only the SIS login works. A parent from the SIS appears on the admin Parents page; do not set a password for them there.
+
+## Parents' phone numbers (Step 20)
+For SMS alerts the canteen can copy each parent's `users.mobile_phone` from the SIS. It is OFF by default (`SIS_SYNC_PHONE=false`).
+1. Ask the SIS administrator to add one column to the canteen's read-only grant:
+   `GRANT SELECT (mobile_phone) ON <sis_db>.users TO 'canteen_ro'@'<CANTEEN_SERVER_IP>';`
+2. Check the data (prints counts and shapes only, never a number): `php artisan sis:check-phones PILOT`
+3. Set `SIS_SYNC_PHONE=true`. Numbers are cleaned to `+855...`; anything doubtful is dropped (no SMS) rather than guessed.
+Numbers are copied at login and at every refresh (about every 10 minutes). The SIS is the source of truth: if it removes a number, SMS to that parent stops.
+Do NOT turn it on before the grant exists: every parent lookup would fail and parents could not sign in.
