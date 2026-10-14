@@ -363,4 +363,15 @@ it('keeps cashiers out of the parents page', function () {
     $this->get('/admin/parents')->assertForbidden();
 });
 
+it('opens the parents page even before the parent role exists', function () {
+    app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+
+    $school = School::create(['name' => 'S1', 'code' => 'S1']);
+    $admin = parentUser($school, 'admin');
+
+    expect(Role::where('name', 'parent')->exists())->toBeFalse();
+
+    $this->actingAs($admin)->get('/admin/parents')->assertOk();
+});
+
 // ------------------------------------------------------------- migrate

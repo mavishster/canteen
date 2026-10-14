@@ -16,6 +16,8 @@ class ParentAccountController extends Controller
     {
         $schoolId = $this->schoolId($request);
 
+        Role::findOrCreate('parent', 'web');   // the page must open before the first parent exists
+
         $parents = User::role('parent')->where('school_id', $schoolId)->orderBy('name')->get();
 
         $links = GuardianLink::with('student:id,name,student_code')

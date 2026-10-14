@@ -37,3 +37,17 @@ then sends that token here:
 
 The children list follows the SIS: a child added or removed there appears or disappears here within about 10 minutes.
 `POST /login` (email + password) is only for development and for accounts created by the school admin; it is switched off with `SIS_ALLOW_LOCAL_PARENT_LOGIN=false`.
+
+## Notifications
+| Method | Path | What it does |
+|---|---|---|
+| POST | `/devices` | `{token, platform: "ios"\|"android"}`: register this phone for push. Call it at every app start (the token can change). → 201 first time, 200 after. |
+| DELETE | `/devices` | `{token}`: stop push to this phone (call it on logout). |
+| GET | `/messages` | The message feed, newest first, paged. `unread` is the count of unread messages. Each item: `id, type, title, body, data{student_id,type}, read, created_at`. |
+| POST | `/messages/read` | `{ids?: [..]}`: mark those messages (or all, when no ids) as read. |
+| GET | `/notification-settings` | `{topup, low_balance, purchase, sms, has_phone, children: [{id, name, low_balance_threshold, effective_threshold}]}`. |
+| PUT | `/notification-settings` | Any of `topup`, `low_balance`, `purchase`, `sms` as true/false. |
+| PUT | `/children/{id}/low-balance` | `{threshold}` in major units (e.g. `2.50`). Empty = the school's default; `0` = no low-balance warning for this child. |
+
+Message types: `topup` (money arrived), `low_balance` (sent once when the balance drops below the threshold), `purchase` (optional, off by default).
+When a push arrives, open the screen for `data.student_id`. The phone number used for SMS is set by the school; the app cannot change it.

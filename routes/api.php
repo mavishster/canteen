@@ -41,3 +41,18 @@ Route::prefix('parent')->middleware([\App\Http\Middleware\ForceJsonResponse::cla
         ->middleware('throttle:10,1')
         ->name('parent.login-sis');
 });
+
+// Parent notifications: message feed, preferences, push token (see docs/parent-api.md)
+Route::prefix('parent')
+    ->middleware([\App\Http\Middleware\ForceJsonResponse::class, 'auth:sanctum', \App\Http\Middleware\EnsureParent::class, 'throttle:60,1'])
+    ->group(function () {
+        Route::get('/messages', [\App\Http\Controllers\ParentApi\NotificationController::class, 'messages'])->name('parent.messages');
+        Route::post('/messages/read', [\App\Http\Controllers\ParentApi\NotificationController::class, 'markRead'])->name('parent.messages.read');
+
+        Route::get('/notification-settings', [\App\Http\Controllers\ParentApi\NotificationController::class, 'settings'])->name('parent.notifications');
+        Route::put('/notification-settings', [\App\Http\Controllers\ParentApi\NotificationController::class, 'updateSettings'])->name('parent.notifications.update');
+        Route::put('/children/{student}/low-balance', [\App\Http\Controllers\ParentApi\NotificationController::class, 'setLowBalance'])->name('parent.low-balance');
+
+        Route::post('/devices', [\App\Http\Controllers\ParentApi\NotificationController::class, 'registerDevice'])->name('parent.devices.register');
+        Route::delete('/devices', [\App\Http\Controllers\ParentApi\NotificationController::class, 'removeDevice'])->name('parent.devices.remove');
+    });
