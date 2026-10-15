@@ -24,4 +24,9 @@ class MealConsumption extends Model
     {
         return $this->belongsTo(MealType::class);
     }
+
+    public function subscription()
+    {
+        return $this->belongsTo(MealSubscription::class, 'meal_subscription_id');
+    }
 }

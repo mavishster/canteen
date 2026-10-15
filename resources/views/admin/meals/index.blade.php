@@ -164,6 +164,8 @@
     </div>
 </div>
 
+@include('admin.meals.closed-days')
+
 <h2 class="h5">Recent plans sold</h2>
 <div class="table-responsive">
     <table class="table bg-white align-middle">

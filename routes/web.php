@@ -69,3 +69,5 @@ require __DIR__ . '/parents.php';
 require __DIR__ . '/staff.php';
 
 require __DIR__ . '/meals.php';
+
+require __DIR__ . '/meal-screen.php';
