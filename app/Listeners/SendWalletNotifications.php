@@ -95,7 +95,7 @@ class SendWalletNotifications implements ShouldQueue
 
         return $sale
             ? $sale->items->map(fn ($i) => "{$i->quantity}× {$i->name}")->implode(', ')
-            : 'canteen purchase';
+            : ($entry->description ?: 'canteen purchase');
     }
 
     /** @param array<string, mixed> $data */

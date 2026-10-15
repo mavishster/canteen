@@ -51,3 +51,12 @@ The children list follows the SIS: a child added or removed there appears or dis
 
 Message types: `topup` (money arrived), `low_balance` (sent once when the balance drops below the threshold), `purchase` (optional, off by default).
 When a push arrives, open the screen for `data.student_id`. The phone number used for SMS is set by the school; the app cannot change it.
+
+## Meal plans (breakfast, lunch)
+A plan is paid **time** (1, 3, 6 or 12 months), bought from the child's wallet. There are no refunds, and holidays or absences do not change it.
+| Method | Path | What it does |
+|---|---|---|
+| GET | `/children/{id}/meals` | For each meal: `paid_until` (date or null), `active_now`, and the `plans` this child can buy (`id, name, duration_months, price, price_formatted`). Only plans that fit the child's grade are listed. |
+| POST | `/children/{id}/meals/subscribe` | `{plan_id, key}` → 201 `{plan, meal_type, valid_from, expires_on, balance}`. Generate a new random `key` per purchase attempt and reuse it when retrying: the same key never charges twice. 422 reasons: `insufficient_balance`, `plan_unavailable`, `too_far_ahead`, `student_inactive`. |
+
+Buying while a plan is active starts the new one the day after the current one ends. Nobody can be paid up more than 12 months ahead.
