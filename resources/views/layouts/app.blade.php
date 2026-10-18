@@ -29,6 +29,7 @@
                 <li class="nav-item"><a class="nav-link" href="{{ route('admin.categories') }}">Categories</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('admin.topups') }}">Top-ups</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('admin.settings') }}">Settings</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('admin.audit') }}">Audit log</a></li>
             @endhasanyrole
         </ul>
         <span class="navbar-text me-3">{{ auth()->user()->name }}</span>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Support\Audit\AuditRecorder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -15,6 +16,7 @@ use Spatie\Permission\Models\Role;
 /**
  * The school's own staff: admins, managers and cashiers. Parents and super-admins are never listed or touched here.
  * "Disabled" means no role, no sessions, no tokens and a scrambled password.
+ * Role changes are written to the audit log here, because they are not changes of the user record itself.
  */
 class StaffController extends Controller
 {
@@ -52,6 +54,12 @@ class StaffController extends Controller
         ]);
         $user->assignRole($data['role']);
 
+        AuditRecorder::log(
+            'staff.role_assigned', 'user', $user->name,
+            "“{$user->name}” given the role {$data['role']}",
+            [], ['role' => $data['role']], $schoolId, $user
+        );
+
         return redirect()->route('admin.staff')->with('status', "{$user->name} can now sign in as {$data['role']}.");
     }
 
@@ -69,8 +77,16 @@ class StaffController extends Controller
             return back()->withErrors(['staff' => 'This account is disabled. Use Enable, which also sets a new password.']);
         }
 
+        $previous = $staffUser->roles->first()->name;
+
         $this->ensureRoles();
         $staffUser->syncRoles([$data['role']]);
+
+        AuditRecorder::log(
+            'staff.role_changed', 'user', $staffUser->name,
+            "“{$staffUser->name}”: role {$previous} → {$data['role']}",
+            ['role' => $previous], ['role' => $data['role']], (int) $staffUser->school_id, $staffUser
+        );
 
         return back()->with('status', "{$staffUser->name} is now {$data['role']}.");
     }
@@ -81,6 +97,7 @@ class StaffController extends Controller
 
         $data = $request->validate(['password' => ['required', 'string', 'min:12', 'max:100']]);
 
+        // The user record's own update event writes "password changed" (without the password) to the audit log
         $staffUser->forceFill(['password' => Hash::make($data['password'])])->save();
         $this->signOut($request, $staffUser);
 
@@ -95,9 +112,17 @@ class StaffController extends Controller
             return back()->withErrors(['staff' => 'You cannot disable your own account.']);
         }
 
+        $previous = $staffUser->roles->first()?->name;
+
         $staffUser->syncRoles([]);
         $staffUser->forceFill(['password' => Hash::make(Str::random(64))])->save();   // nobody knows it
         $this->signOut($request, $staffUser);
+
+        AuditRecorder::log(
+            'staff.disabled', 'user', $staffUser->name,
+            "“{$staffUser->name}” disabled" . ($previous ? " (was {$previous})" : ''),
+            ['role' => $previous], [], (int) $staffUser->school_id, $staffUser
+        );
 
         return back()->with('status', "{$staffUser->name} is disabled and has been signed out.");
     }
@@ -118,6 +143,12 @@ class StaffController extends Controller
         $this->ensureRoles();
         $staffUser->forceFill(['password' => Hash::make($data['password'])])->save();
         $staffUser->assignRole($data['role']);
+
+        AuditRecorder::log(
+            'staff.enabled', 'user', $staffUser->name,
+            "“{$staffUser->name}” enabled as {$data['role']}",
+            [], ['role' => $data['role']], (int) $staffUser->school_id, $staffUser
+        );
 
         return back()->with('status', "{$staffUser->name} is active again as {$data['role']}.");
     }
