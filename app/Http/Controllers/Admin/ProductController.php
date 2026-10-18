@@ -11,6 +11,7 @@ use App\Services\StockService;
 use App\Support\Money;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
 
@@ -22,7 +23,8 @@ class ProductController extends Controller
             ->orderBy('name')
             ->get();
 
-        $categories = Category::orderBy('name')->pluck('name');
+        // Only the list's available categories can be chosen
+        $categories = Category::where('is_active', true)->orderBy('name')->get(['id', 'name']);
         $currency = $request->user()->school_id
             ? School::findOrFail($request->user()->school_id)->currency
             : 'USD';
@@ -40,7 +42,7 @@ class ProductController extends Controller
 
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'category' => ['nullable', 'string', 'max:100'],
+            'category_id' => ['nullable', 'integer', $this->categoryRule($schoolId)],
             'price' => ['required', 'numeric', 'min:0.01', 'max:100000000'],
             'stock' => ['nullable', 'integer', 'min:0', 'max:1000000'],
         ]);
@@ -48,16 +50,12 @@ class ProductController extends Controller
         $currency = School::findOrFail($schoolId)->currency;
         $price = $this->minorPrice($data['price'], $currency);
 
-        $category = filled($data['category'] ?? null)
-            ? Category::firstOrCreate(['school_id' => $schoolId, 'name' => trim($data['category'])])
-            : null;
-
         // A starting stock figure turns tracking on; leaving it empty means "not tracked"
         $tracked = filled($data['stock'] ?? null);
 
         $product = Product::create([
             'school_id' => $schoolId,
-            'category_id' => $category?->id,
+            'category_id' => $data['category_id'] ?? null,
             'name' => $data['name'],
             'price' => $price,
             'track_stock' => $tracked,
@@ -69,6 +67,17 @@ class ProductController extends Controller
         }
 
         return redirect()->route('admin.products')->with('status', 'Product added.');
+    }
+
+    public function setCategory(Request $request, Product $product)
+    {
+        $data = $request->validate([
+            'category_id' => ['nullable', 'integer', $this->categoryRule((int) $product->school_id)],
+        ]);
+
+        $product->update(['category_id' => $data['category_id'] ?? null]);
+
+        return redirect()->route('admin.products')->with('status', "{$product->name}: category saved.");
     }
 
     public function update(Request $request, Product $product)
@@ -144,6 +153,12 @@ class ProductController extends Controller
             ->paginate(30);
 
         return view('admin.stock.index', compact('movements'));
+    }
+
+    /** A category chosen from the list: it must exist in this school and be available. */
+    private function categoryRule(int $schoolId)
+    {
+        return Rule::exists('categories', 'id')->where('school_id', $schoolId)->where('is_active', true);
     }
 
     private function minorPrice(string|int|float $value, string $currency): int

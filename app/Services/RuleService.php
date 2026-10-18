@@ -4,11 +4,13 @@ namespace App\Services;
 
 use App\Exceptions\RuleException;
 use App\Models\Account;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\School;
 use App\Models\Student;
 use App\Models\StudentBan;
+use App\Support\Money;
 use Carbon\CarbonInterface;
 use InvalidArgumentException;
 
@@ -24,6 +26,7 @@ class RuleService
     {
         $now = now()->setTimezone($school->timezone);
 
+        $this->assertSingleSale($school, $total);
         $this->assertBuyingHours($school, $now);
         $this->assertNoBans($student, $lines);
         $this->assertWithinLimits($school, $student, $account, $total, $now);
@@ -71,7 +74,7 @@ class RuleService
         ]);
     }
 
-    public function banCategory(Student $student, \App\Models\Category $category): StudentBan
+    public function banCategory(Student $student, Category $category): StudentBan
     {
         if ((int) $category->school_id !== (int) $student->school_id) {
             throw new InvalidArgumentException('That category belongs to another school.');
@@ -90,6 +93,22 @@ class RuleService
     }
 
     // --------------------------------------------------------------- checks
+
+    /**
+     * The most one purchase may cost (settings.till.max_sale). A copied card can then never empty an account in one go.
+     * Meal plans are bought from the wallet, not at the till, so this does not apply to them.
+     */
+    private function assertSingleSale(School $school, int $total): void
+    {
+        $max = (int) data_get($school->settings, 'till.max_sale', 0);
+
+        if ($max > 0 && $total > $max) {
+            throw new RuleException(
+                'over_sale_limit',
+                'A single purchase cannot be more than ' . Money::format($max, $school->currency) . '.'
+            );
+        }
+    }
 
     private function assertBuyingHours(School $school, CarbonInterface $now): void
     {
@@ -163,7 +182,7 @@ class RuleService
 
             $cap = (int) min($caps);
 
-            // Safe from races: the caller holds the account row lock
+            // Safe from races: the caller holds the account row lock. Refunded sales do not count.
             $spent = (int) Sale::withoutGlobalScopes()
                 ->where('account_id', $account->id)
                 ->whereNull('voided_at')

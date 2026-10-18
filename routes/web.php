@@ -71,3 +71,5 @@ require __DIR__ . '/staff.php';
 require __DIR__ . '/meals.php';
 
 require __DIR__ . '/meal-screen.php';
+
+require __DIR__ . '/categories.php';

@@ -2,6 +2,7 @@
 
 use App\Models\School;
 use App\Models\User;
+use Illuminate\Support\Facades\Artisan;
 use Spatie\Permission\Models\Role;
 
 function readyPrepare(): void
@@ -24,7 +25,7 @@ function readyPrepare(): void
     $admin->assignRole('admin');
 }
 
-/** A production setup that should pass: every value is safe. */
+/** A production setup where every value is safe. */
 function readySafeProduction(): void
 {
     readyPrepare();
@@ -50,11 +51,15 @@ function readySafeProduction(): void
     ]);
 }
 
-it('passes a safe production setup, with warnings only where a person must act', function () {
+// While the ABA driver is only a stub, it is the ONE thing that stops an otherwise safe server.
+// When the real driver is written and AbaPayWayGateway::IMPLEMENTED becomes true, this test must say "passes".
+it('blocks an otherwise safe production setup only because the ABA driver is unfinished', function () {
     readySafeProduction();
 
-    $this->artisan('canteen:check')->assertExitCode(0)
-        ->expectsOutputToContain('No blocking problems');
+    $this->artisan('canteen:check')
+        ->assertExitCode(1)
+        ->expectsOutputToContain('ABA PayWay driver is not written yet')
+        ->expectsOutputToContain('1 blocking problem');
 });
 
 it('blocks go-live on the dangerous settings', function () {
@@ -90,10 +95,11 @@ it('blocks go-live when demo accounts remain or the super-admin is missing', fun
 it('lists results as JSON for a monitoring tool', function () {
     readySafeProduction();
 
-    $output = \Illuminate\Support\Facades\Artisan::call('canteen:check', ['--json' => true]);
-    $json = json_decode(\Illuminate\Support\Facades\Artisan::output(), true);
+    $exit = Artisan::call('canteen:check', ['--json' => true]);
+    $json = json_decode(Artisan::output(), true);
+    $failing = collect($json)->where('level', 'FAIL')->pluck('area')->values()->all();
 
-    expect($output)->toBe(0)
+    expect($exit)->toBe(1)
         ->and($json)->toBeArray()
-        ->and(collect($json)->pluck('level')->unique()->sort()->values()->all())->not->toContain('FAIL');
+        ->and($failing)->toBe(['ABA driver']);
 });

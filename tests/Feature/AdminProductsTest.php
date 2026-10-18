@@ -24,11 +24,12 @@ it('converts typed prices to minor units', function () {
         ->and(Money::toMinor('2500', 'KHR'))->toBe(2500);
 });
 
-it('adds a product with its category, storing the price in cents', function () {
+it('adds a product in a category chosen from the list, storing the price in cents', function () {
     $school = School::create(['name' => 'S1', 'code' => 'S1', 'currency' => 'USD']);
+    $drinks = Category::create(['school_id' => $school->id, 'name' => 'Drinks']);
     $this->actingAs(productAdmin($school));
 
-    $this->post('/admin/products', ['name' => 'Cola', 'category' => 'Drinks', 'price' => '1.50'])
+    $this->post('/admin/products', ['name' => 'Cola', 'category_id' => $drinks->id, 'price' => '1.50'])
         ->assertRedirect(route('admin.products'));
 
     $product = Product::where('name', 'Cola')->first();

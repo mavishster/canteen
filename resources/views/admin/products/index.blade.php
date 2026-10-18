@@ -4,14 +4,15 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h1 class="h3 mb-0">Products</h1>
-    <a href="{{ route('admin.stock') }}" class="btn btn-outline-secondary btn-sm">Stock history</a>
+    <div>
+        <a href="{{ route('admin.categories') }}" class="btn btn-outline-secondary btn-sm">Categories</a>
+        <a href="{{ route('admin.stock') }}" class="btn btn-outline-secondary btn-sm">Stock history</a>
+    </div>
 </div>
 
 @if ($errors->any())
     <div class="alert alert-danger">
-        @foreach ($errors->all() as $error)
-            <div>{{ $error }}</div>
-        @endforeach
+        @foreach ($errors->all() as $error)<div>{{ $error }}</div>@endforeach
     </div>
 @endif
 
@@ -27,13 +28,13 @@
                     <input id="name" name="name" value="{{ old('name') }}" class="form-control" required>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label" for="category">Category</label>
-                    <input id="category" name="category" value="{{ old('category') }}" class="form-control" list="categoryList" placeholder="e.g. Drinks">
-                    <datalist id="categoryList">
-                        @foreach ($categories as $name)
-                            <option value="{{ $name }}">
+                    <label class="form-label" for="category_id">Category</label>
+                    <select id="category_id" name="category_id" class="form-select">
+                        <option value="">No category</option>
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->id }}" @selected(old('category_id') == $category->id)>{{ $category->name }}</option>
                         @endforeach
-                    </datalist>
+                    </select>
                 </div>
                 <div class="col-md-2">
                     <label class="form-label" for="price">Price ({{ $currency === 'KHR' ? '៛' : '$' }})</label>
@@ -47,7 +48,9 @@
                     <button class="btn btn-primary w-100">Add product</button>
                 </div>
             </form>
-            <div class="form-text mt-2">Leave "Starting stock" empty for items that are not counted, such as meals cooked to order.</div>
+            <div class="form-text mt-2">
+                Categories come from the <a href="{{ route('admin.categories') }}">categories list</a>. Leave "Starting stock" empty for items that are not counted, such as meals cooked to order.
+            </div>
         </div>
     </div>
 @endif
@@ -57,8 +60,8 @@
         <thead class="table-light">
             <tr>
                 <th>Name</th>
-                <th>Category</th>
-                <th style="width: 220px">Price</th>
+                <th style="width: 220px">Category</th>
+                <th style="width: 200px">Price</th>
                 <th style="width: 300px">Stock</th>
                 <th>Status</th>
                 <th class="text-end">Actions</th>
@@ -68,7 +71,21 @@
         @forelse ($products as $product)
             <tr class="{{ $product->is_active ? '' : 'text-muted' }}">
                 <td>{{ $product->name }}</td>
-                <td>{{ $product->category?->name ?? '–' }}</td>
+                <td>
+                    <form method="POST" action="{{ route('admin.products.category', $product) }}" class="d-flex gap-1">
+                        @csrf
+                        <select name="category_id" class="form-select form-select-sm">
+                            <option value="">No category</option>
+                            @foreach ($categories as $category)
+                                <option value="{{ $category->id }}" @selected((int) $product->category_id === (int) $category->id)>{{ $category->name }}</option>
+                            @endforeach
+                            @if ($product->category && ! $categories->contains('id', $product->category_id))
+                                <option value="{{ $product->category_id }}" selected disabled>{{ $product->category->name }} (hidden)</option>
+                            @endif
+                        </select>
+                        <button class="btn btn-sm btn-outline-secondary">Save</button>
+                    </form>
+                </td>
                 <td>
                     <form method="POST" action="{{ route('admin.products.update', $product) }}" class="d-flex gap-2">
                         @csrf

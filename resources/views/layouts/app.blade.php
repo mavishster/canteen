@@ -26,6 +26,7 @@
                 <li class="nav-item"><a class="nav-link" href="{{ route('admin.staff') }}">Staff</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('admin.meals') }}">Meals</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('admin.products') }}">Products</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('admin.categories') }}">Categories</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('admin.topups') }}">Top-ups</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('admin.settings') }}">Settings</a></li>
             @endhasanyrole

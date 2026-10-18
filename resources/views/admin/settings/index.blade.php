@@ -8,13 +8,11 @@
 @section('title', 'School settings')
 
 @section('content')
-<h1 class="h3 mb-3">School settings · {{ $school->name }}</h1>
+<h1 class="h3 mb-3">School settings</h1>
 
 @if ($errors->any())
     <div class="alert alert-danger">
-        @foreach ($errors->all() as $error)
-            <div>{{ $error }}</div>
-        @endforeach
+        @foreach ($errors->all() as $error)<div>{{ $error }}</div>@endforeach
     </div>
 @endif
 
@@ -22,12 +20,34 @@
     @csrf
 
     <div class="card shadow-sm mb-4">
-        <div class="card-header fw-semibold">Spending maximums by grade</div>
+        <div class="card-header fw-semibold">School</div>
+        <div class="card-body row g-3">
+            <div class="col-md-6">
+                <label class="form-label" for="name">Name</label>
+                <input id="name" name="name" value="{{ old('name', $values['name']) }}" class="form-control" maxlength="255" required>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Currency</label>
+                <input class="form-control" value="{{ $school->currency }}" disabled>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Time zone</label>
+                <input class="form-control" value="{{ $school->timezone }}" disabled>
+            </div>
+            <div class="col-12 form-text">
+                Currency and time zone are fixed once students have money, because changing them would change every balance and every report.
+                Closed days for meals are on the <a href="{{ route('admin.meals') }}">Meals</a> page.
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header fw-semibold">Spending limits</div>
         <div class="card-body">
             <p class="text-muted small">
-                Parents can set lower limits for their child, never higher. Leave a box empty for no school maximum.
+                Maximums by grade. Parents can set lower limits for their child, never higher. Leave a box empty for no school maximum.
             </p>
-            <table class="table align-middle mb-0">
+            <table class="table align-middle">
                 <thead class="table-light">
                     <tr><th>Grades</th><th style="width: 30%">Daily max ({{ $symbol }})</th><th style="width: 30%">Weekly max ({{ $symbol }})</th></tr>
                 </thead>
@@ -41,6 +61,16 @@
                 @endforeach
                 </tbody>
             </table>
+
+            <div class="row g-3">
+                <div class="col-md-5">
+                    <label class="form-label" for="max_sale">Most one purchase may cost ({{ $symbol }})</label>
+                    <input id="max_sale" name="max_sale" type="number" min="0" step="{{ $step }}" value="{{ old('max_sale', $values['max_sale']) }}" class="form-control" placeholder="no limit">
+                    <div class="form-text">
+                        A lost or copied card can then never empty the account in one go. The till refuses a sale above this amount.
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -81,6 +111,48 @@
         </div>
     </div>
 
-    <button class="btn btn-primary">Save settings</button>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header fw-semibold">Top-ups</div>
+        <div class="card-body row g-3">
+            <div class="col-md-4">
+                <label class="form-label" for="topup_min">Smallest top-up ({{ $symbol }})</label>
+                <input id="topup_min" name="topup_min" type="number" min="0" step="{{ $step }}" value="{{ old('topup_min', $values['topup_min']) }}" class="form-control">
+                <div class="form-text">Small top-ups lose too much to card fees. Parents cannot pay less than this.</div>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label" for="khr_per_usd">Riel per US dollar</label>
+                <input id="khr_per_usd" name="khr_per_usd" type="number" min="1000" max="10000" step="1" value="{{ old('khr_per_usd', $values['khr_per_usd']) }}" class="form-control">
+                <div class="form-text">Used when a parent pays in the other currency. The amount credited is rounded down.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header fw-semibold">Alerts to parents</div>
+        <div class="card-body row g-3">
+            <div class="col-md-5">
+                <label class="form-label" for="low_balance">Low balance warning below ({{ $symbol }})</label>
+                <input id="low_balance" name="low_balance" type="number" min="0" step="{{ $step }}" value="{{ old('low_balance', $values['low_balance']) }}" class="form-control">
+                <div class="form-text">The default for every child. Parents can change it for their own child. 0 switches the warning off.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header fw-semibold">Till</div>
+        <div class="card-body">
+            <input type="hidden" name="manual_entry" value="0">
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" id="manual_entry" name="manual_entry" value="1"
+                       {{ old('manual_entry', $values['manual_entry']) ? 'checked' : '' }}>
+                <label class="form-check-label" for="manual_entry">Allow selling by student number (for a child who forgot the card)</label>
+            </div>
+            <div class="form-text mt-2">
+                The cashier always has to confirm the child's name, and a blocked card still refuses. It also applies to the meal screen.
+            </div>
+        </div>
+    </div>
+
+    <button class="btn btn-primary btn-lg">Save settings</button>
 </form>
 @endsection
