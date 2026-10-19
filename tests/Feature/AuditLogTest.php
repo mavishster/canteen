@@ -55,7 +55,7 @@ function audLogs(?string $action = null)
 
 function audKid(School $school, string $code = 'K1'): Student
 {
-    return Student::create(['school_id' => $school->id, 'student_code' => $code, 'name' => "Kid {$code}", 'grade' => 3]);
+    return Student::create(['school_id' => $school->id, 'student_code' => $code, 'name' => "Kid {$code}", 'grade' => 3])->refresh();
 }
 
 // ----------------------------------------------------------------- what is recorded

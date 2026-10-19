@@ -163,7 +163,8 @@ it('counts active students below the low-balance line', function () {
     $this->actingAs(wrUser($school))
         ->get('/manager/reports/balances')
         ->assertOk()
-        ->assertSee('2 active student(s) are below the school\'s low-balance line of $2.00');
+        ->assertSee('2 active student(s) are below')
+        ->assertSee('low-balance line of $2.00');
 });
 
 it('shows how the total moved over a period, and it adds up', function () {

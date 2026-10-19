@@ -4,14 +4,14 @@ namespace App\Support;
 
 final class Money
 {
-    /** Amounts are stored in minor units: cents for USD, riel for KHR. */
+    /** Amounts are stored in minor units: cents for USD, riel for KHR. A negative amount is shown as -$2.00 / -4,000 ៛. */
     public static function format(int $amount, string $currency = 'USD'): string
     {
         if ($currency === 'KHR') {
             return number_format($amount) . ' ៛';
         }
 
-        return '$' . number_format($amount / 100, 2);
+        return ($amount < 0 ? '-' : '') . '$' . number_format(abs($amount) / 100, 2);
     }
 
     /** "1.50" typed by a person -> 150 (USD) or "2500" -> 2500 (KHR). */
