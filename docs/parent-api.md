@@ -60,3 +60,25 @@ A plan is paid **time** (1, 3, 6 or 12 months), bought from the child's wallet. 
 | POST | `/children/{id}/meals/subscribe` | `{plan_id, key}` → 201 `{plan, meal_type, valid_from, expires_on, balance}`. Generate a new random `key` per purchase attempt and reuse it when retrying: the same key never charges twice. 422 reasons: `insufficient_balance`, `plan_unavailable`, `too_far_ahead`, `student_inactive`. |
 
 Buying while a plan is active starts the new one the day after the current one ends. Nobody can be paid up more than 12 months ahead.
+
+## Consent (first sign-in)
+When the school requires it, every other call answers `403 {"reason": "consent_required"}` until the parent has accepted the school's newest text.
+Show the text and a tick box, then send the version.
+
+| Method | Path | What it does |
+|---|---|---|
+| GET | `/consent` | `{required, must_accept, version, text, accepted_at}`. Call it after sign-in (or whenever you get `consent_required`). `must_accept` true means: show the text and block the app until accepted. |
+| POST | `/consent` | `{version}` the parent accepted. → `{ok, version, accepted_at}`. 409 `version_changed` if the school published a newer text meanwhile: fetch it again. Safe to repeat. |
+
+A new version asks everyone again. The acceptance is stored with the version, the time and the address as evidence.
+
+## Consent (first sign-in)
+When the school requires it, every other call answers `403 {"reason": "consent_required"}` until the parent has accepted the school's newest text.
+Show the text and a tick box, then send the version.
+
+| Method | Path | What it does |
+|---|---|---|
+| GET | `/consent` | `{required, must_accept, version, text, accepted_at}`. Call it after sign-in (or whenever you get `consent_required`). `must_accept` true means: show the text and block the app until accepted. |
+| POST | `/consent` | `{version}` the parent accepted. → `{ok, version, accepted_at}`. 409 `version_changed` if the school published a newer text meanwhile: fetch it again. Safe to repeat. |
+
+A new version asks everyone again. The acceptance is stored with the version, the time and the address as evidence.

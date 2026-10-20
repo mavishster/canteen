@@ -23,6 +23,7 @@
             @hasanyrole('admin|super-admin')
                 <li class="nav-item"><a class="nav-link" href="{{ route('admin.students') }}">Students</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('admin.parents') }}">Parents</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('admin.consent') }}">Consent</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('admin.staff') }}">Staff</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('admin.meals') }}">Meals</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('admin.products') }}">Products</a></li>

@@ -17,6 +17,8 @@ use Spatie\Permission\Models\Role;
  */
 class CheckCanteen extends Command
 {
+    use \App\Console\Commands\Concerns\ChecksConsent;
+
     protected $signature = 'canteen:check {--json : Print the results as JSON (for a monitoring tool)}';
 
     protected $description = 'Checks the configuration and data for a go-live: what is unsafe or missing.';
@@ -26,6 +28,8 @@ class CheckCanteen extends Command
 
     public function handle(): int
     {
+        $this->results = [];   // a second run in the same process must not repeat the first one
+
         $production = config('app.env') === 'production';
 
         $this->checkApp($production);
@@ -35,6 +39,7 @@ class CheckCanteen extends Command
         $this->checkQueueAndSchedule($production);
         $this->checkDatabase();
         $this->checkAccounts($production);
+        $this->checkConsent($production);
 
         if ($this->option('json')) {
             $this->line(json_encode($this->results, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));

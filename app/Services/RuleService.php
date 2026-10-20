@@ -28,6 +28,7 @@ class RuleService
 
         $this->assertSingleSale($school, $total);
         $this->assertBuyingHours($school, $now);
+        $this->assertCategoryHours($lines, $now);
         $this->assertNoBans($student, $lines);
         $this->assertWithinLimits($school, $student, $account, $total, $now);
     }
@@ -137,6 +138,76 @@ class RuleService
         if (! ($dayOk && $timeOk)) {
             throw RuleException::outsideHours($windows);
         }
+    }
+
+    /**
+     * Some categories (snacks, sweets) may be bought only at certain times or on certain days.
+     * One closed item in the cart refuses the whole sale, and the message names the category and when it is open.
+     *
+     * @param  array<int, array{product_id:int}>  $lines
+     */
+    private function assertCategoryHours(array $lines, CarbonInterface $now): void
+    {
+        $categoryIds = Product::withoutGlobalScopes()
+            ->whereIn('id', array_column($lines, 'product_id'))
+            ->whereNotNull('category_id')
+            ->pluck('category_id')
+            ->unique()
+            ->all();
+
+        if (! $categoryIds) {
+            return;
+        }
+
+        $closed = Category::withoutGlobalScopes()
+            ->whereIn('id', $categoryIds)
+            ->get()
+            ->filter(fn (Category $c) => $c->hasSellingHours() && ! $this->categoryOpen($c, $now));
+
+        if ($closed->isEmpty()) {
+            return;
+        }
+
+        throw new RuleException(
+            'category_closed',
+            $closed->map(fn (Category $c) => $c->name . ' can only be bought ' . $this->describeHours($c) . '.')->implode(' ')
+        );
+    }
+
+    private function categoryOpen(Category $category, CarbonInterface $now): bool
+    {
+        $days = $category->sell_days;
+
+        if (is_array($days) && $days !== [] && ! in_array($now->isoWeekday(), array_map('intval', $days), true)) {
+            return false;
+        }
+
+        if ($category->sell_from !== null && $category->sell_to !== null) {
+            $time = $now->format('H:i');
+
+            // From and to are both inclusive
+            if ($time < substr((string) $category->sell_from, 0, 5) || $time > substr((string) $category->sell_to, 0, 5)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private function describeHours(Category $category): string
+    {
+        $names = [1 => 'Mon', 2 => 'Tue', 3 => 'Wed', 4 => 'Thu', 5 => 'Fri', 6 => 'Sat', 7 => 'Sun'];
+        $parts = [];
+
+        if ($category->sell_from !== null && $category->sell_to !== null) {
+            $parts[] = 'between ' . substr((string) $category->sell_from, 0, 5) . ' and ' . substr((string) $category->sell_to, 0, 5);
+        }
+
+        if (! empty($category->sell_days)) {
+            $parts[] = 'on ' . implode(', ', array_map(fn ($d) => $names[(int) $d] ?? $d, $category->sell_days));
+        }
+
+        return implode(' ', $parts);
     }
 
     private function assertNoBans(Student $student, array $lines): void

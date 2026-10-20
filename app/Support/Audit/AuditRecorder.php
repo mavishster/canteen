@@ -145,7 +145,7 @@ class AuditRecorder
                 'entity' => 'category',
                 'events' => ['created', 'updated', 'deleted'],
                 'label' => fn ($m) => $m->name,
-                'fields' => ['name', 'is_active'],
+                'fields' => ['name', 'is_active', 'sell_from', 'sell_to', 'sell_days'],
             ],
             MealType::class => [
                 'entity' => 'meal',

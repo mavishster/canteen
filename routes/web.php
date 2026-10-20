@@ -75,3 +75,9 @@ require __DIR__ . '/meal-screen.php';
 require __DIR__ . '/categories.php';
 
 require __DIR__ . '/audit-reports.php';
+
+require __DIR__ . '/consent.php';
+
+require __DIR__ . '/category-hours.php';
+
+require __DIR__ . '/meal-reports.php';

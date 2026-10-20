@@ -12,11 +12,20 @@ class Category extends Model
 
     protected $guarded = [];
 
-    protected $casts = ['is_active' => 'boolean'];
+    protected $casts = [
+        'is_active' => 'boolean',
+        'sell_days' => 'array',
+    ];
 
     public function products()
     {
         return $this->hasMany(Product::class);
+    }
+
+    /** True when the category may be bought only at certain times or on certain days. */
+    public function hasSellingHours(): bool
+    {
+        return ($this->sell_from !== null && $this->sell_to !== null) || ! empty($this->sell_days);
     }
 
     /**

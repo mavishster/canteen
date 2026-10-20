@@ -4,6 +4,9 @@
         <a class="nav-link {{ request()->routeIs('manager.reports.daily') ? 'active' : '' }}" href="{{ route('manager.reports.daily') }}">Daily sales</a>
     </li>
     <li class="nav-item">
+        <a class="nav-link {{ request()->routeIs('manager.reports.meals') ? 'active' : '' }}" href="{{ route('manager.reports.meals') }}">Meals</a>
+    </li>
+    <li class="nav-item">
         <a class="nav-link {{ request()->routeIs('manager.reports.topups') ? 'active' : '' }}" href="{{ route('manager.reports.topups') }}">Top-ups</a>
     </li>
     <li class="nav-item">

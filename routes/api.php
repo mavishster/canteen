@@ -64,3 +64,11 @@ Route::prefix('parent')
         Route::get('/children/{student}/meals', [\App\Http\Controllers\ParentApi\MealController::class, 'index'])->name('parent.meals');
         Route::post('/children/{student}/meals/subscribe', [\App\Http\Controllers\ParentApi\MealController::class, 'subscribe'])->name('parent.meals.subscribe');
     });
+
+// Parental consent (see docs/parent-api.md)
+Route::prefix('parent')
+    ->middleware([\App\Http\Middleware\ForceJsonResponse::class, 'auth:sanctum', \App\Http\Middleware\EnsureParent::class, 'throttle:60,1'])
+    ->group(function () {
+        Route::get('/consent', [\App\Http\Controllers\ParentApi\ConsentController::class, 'show'])->name('parent.consent');
+        Route::post('/consent', [\App\Http\Controllers\ParentApi\ConsentController::class, 'accept'])->name('parent.consent.accept');
+    });

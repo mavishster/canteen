@@ -4,7 +4,7 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h1 class="h3 mb-0">Product categories</h1>
-    <a href="{{ route('admin.products') }}" class="btn btn-outline-secondary btn-sm">← Products</a>
+    <a href="{{ route('admin.category-hours') }}" class="btn btn-outline-primary btn-sm me-1">Selling hours</a><a href="{{ route('admin.products') }}" class="btn btn-outline-secondary btn-sm">← Products</a>
 </div>
 
 @if ($errors->any())
