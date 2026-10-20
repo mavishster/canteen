@@ -18,7 +18,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    Route::view('/', 'dashboard')->name('dashboard');
+    Route::get('/', \App\Http\Controllers\HomeController::class)->name('dashboard');
 
     Route::middleware('role:cashier|manager|admin|super-admin')->group(function () {
         Route::get('/till', [TillController::class, 'index'])->name('till');
@@ -81,3 +81,5 @@ require __DIR__ . '/consent.php';
 require __DIR__ . '/category-hours.php';
 
 require __DIR__ . '/meal-reports.php';
+
+require __DIR__ . '/super.php';

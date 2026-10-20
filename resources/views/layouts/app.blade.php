@@ -12,6 +12,9 @@
     <nav class="navbar navbar-expand navbar-dark bg-dark px-3">
         <a class="navbar-brand" href="{{ route('dashboard') }}">{{ config('app.name') }}</a>
         <ul class="navbar-nav me-auto">
+            @role('super-admin')
+                <li class="nav-item"><a class="nav-link" href="{{ route('super.schools') }}">Schools</a></li>
+            @endrole
             @hasanyrole('cashier|manager|admin|super-admin')
                 <li class="nav-item"><a class="nav-link" href="{{ route('till') }}">Till</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('till.meals') }}">Meal screen</a></li>

@@ -82,3 +82,7 @@ Show the text and a tick box, then send the version.
 | POST | `/consent` | `{version}` the parent accepted. → `{ok, version, accepted_at}`. 409 `version_changed` if the school published a newer text meanwhile: fetch it again. Safe to repeat. |
 
 A new version asks everyone again. The acceptance is stored with the version, the time and the address as evidence.
+
+## The school
+`GET /school` → `{name, display_name, color, contact, currency, timezone}`. `display_name` falls back to `name`; `color` (like `#1a73e8`) and `contact` can be null.
+Use it for the app header. It works before the parent has accepted the consent text.

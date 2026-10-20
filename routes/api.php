@@ -72,3 +72,10 @@ Route::prefix('parent')
         Route::get('/consent', [\App\Http\Controllers\ParentApi\ConsentController::class, 'show'])->name('parent.consent');
         Route::post('/consent', [\App\Http\Controllers\ParentApi\ConsentController::class, 'accept'])->name('parent.consent.accept');
     });
+
+// The school's own name, colour and contact for the app (see docs/parent-api.md)
+Route::prefix('parent')
+    ->middleware([\App\Http\Middleware\ForceJsonResponse::class, 'auth:sanctum', \App\Http\Middleware\EnsureParent::class, 'throttle:60,1'])
+    ->group(function () {
+        Route::get('/school', [\App\Http\Controllers\ParentApi\SchoolController::class, 'show'])->name('parent.school');
+    });
