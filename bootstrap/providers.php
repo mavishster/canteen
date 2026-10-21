@@ -4,5 +4,6 @@ use App\Providers\AppServiceProvider;
 
 return [
     AppServiceProvider::class,
+    \App\Providers\LocaleServiceProvider::class,
     \App\Providers\AuditServiceProvider::class,
 ];

@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', 'Till')
+@section('title', __('Till'))
 
 @section('content')
 @if (! auth()->user()->school_id)
-    <div class="alert alert-info">Log in as a school user to use the till.</div>
+    <div class="alert alert-info">{{ __('Log in as a school user to use the till.') }}</div>
 @elseif ($products->isEmpty())
-    <div class="alert alert-warning">There are no products yet. Ask an admin to add some under Products.</div>
+    <div class="alert alert-warning">{{ __('There are no products yet. Ask an admin to add some under Products.') }}</div>
 @else
     <div class="row g-3">
         <div class="col-lg-8">
@@ -15,15 +15,15 @@
 
         <div class="col-lg-4">
             <div class="card shadow-sm sticky-top" style="top: 1rem">
-                <div class="card-header fw-semibold">Cart</div>
+                <div class="card-header fw-semibold">{{ __('Cart') }}</div>
                 <ul class="list-group list-group-flush" id="cartLines"></ul>
                 <div class="card-body">
                     <div class="d-flex justify-content-between fs-4 fw-bold">
-                        <span>Total</span><span id="cartTotal"></span>
+                        <span>{{ __('Total') }}</span><span id="cartTotal"></span>
                     </div>
                     <div class="d-grid gap-2 mt-3">
-                        <button type="button" id="payBtn" class="btn btn-success btn-lg" disabled>Pay · tap card</button>
-                        <button type="button" id="clearBtn" class="btn btn-outline-secondary">Clear cart</button>
+                        <button type="button" id="payBtn" class="btn btn-success btn-lg" disabled>{{ __('Pay · tap card') }}</button>
+                        <button type="button" id="clearBtn" class="btn btn-outline-secondary">{{ __('Clear cart') }}</button>
                     </div>
                 </div>
             </div>
@@ -37,30 +37,30 @@
 
                     <div class="pay-state" id="st-waiting">
                         <div class="display-6 mb-2" id="payTotal"></div>
-                        <p class="fs-3 mb-1">Tap the card</p>
-                        <p class="text-muted mb-3">or type the student number</p>
+                        <p class="fs-3 mb-1">{{ __('Tap the card') }}</p>
+                        <p class="text-muted mb-3">{{ __('or type the student number') }}</p>
                         <form id="tapForm" autocomplete="off">
                             <div class="input-group input-group-lg">
-                                <input id="tapUid" class="form-control text-center" placeholder="Card or student number" autocomplete="off">
-                                <button type="submit" class="btn btn-primary">Charge</button>
+                                <input id="tapUid" class="form-control text-center" placeholder="{{ __('Card or student number') }}" autocomplete="off">
+                                <button type="submit" class="btn btn-primary">{{ __('Charge') }}</button>
                             </div>
                         </form>
-                        <button type="button" class="btn btn-link mt-3" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-link mt-3" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
                     </div>
 
                     <div class="pay-state d-none" id="st-busy">
                         <div class="spinner-border" role="status"></div>
-                        <p class="fs-4 mt-3 mb-0">Processing…</p>
+                        <p class="fs-4 mt-3 mb-0">{{ __('Processing…') }}</p>
                     </div>
 
                     <div class="pay-state d-none" id="st-confirm">
-                        <p class="text-muted mb-1">Student number</p>
+                        <p class="text-muted mb-1">{{ __('Student number') }}</p>
                         <div class="display-6" id="confirmCode"></div>
                         <div class="fs-3 mt-2" id="confirmName"></div>
                         <div class="fs-5 text-muted mb-4" id="confirmGrade"></div>
-                        <p class="mb-4">Charge <strong id="confirmTotal"></strong> to this student?</p>
-                        <button type="button" class="btn btn-success btn-lg" id="confirmBtn">Yes, charge</button>
-                        <button type="button" class="btn btn-link" id="confirmBackBtn">No, go back</button>
+                        <p class="mb-4">{{ __('Charge') }} <strong id="confirmTotal"></strong> {{ __('to this student?') }}</p>
+                        <button type="button" class="btn btn-success btn-lg" id="confirmBtn">{{ __('Yes, charge') }}</button>
+                        <button type="button" class="btn btn-link" id="confirmBackBtn">{{ __('No, go back') }}</button>
                     </div>
 
                     <div class="pay-state d-none" id="st-ok">
@@ -69,19 +69,19 @@
                         <div class="small text-muted" id="okVia"></div>
                         <ul class="list-unstyled text-start mx-auto my-3" id="okLines" style="max-width: 320px"></ul>
                         <div class="d-flex justify-content-between fs-5 mx-auto" style="max-width: 320px">
-                            <span>Paid</span><strong id="okTotal"></strong>
+                            <span>{{ __('Paid') }}</span><strong id="okTotal"></strong>
                         </div>
                         <div class="d-flex justify-content-between fs-5 mx-auto" style="max-width: 320px">
-                            <span>Balance left</span><strong id="okBalance"></strong>
+                            <span>{{ __('Balance left') }}</span><strong id="okBalance"></strong>
                         </div>
-                        <button type="button" class="btn btn-success btn-lg mt-4" id="doneBtn">New sale</button>
+                        <button type="button" class="btn btn-success btn-lg mt-4" id="doneBtn">{{ __('New sale') }}</button>
                     </div>
 
                     <div class="pay-state d-none" id="st-err">
                         <div class="text-danger display-3">✕</div>
                         <p class="fs-4 mb-4" id="errMessage"></p>
-                        <button type="button" class="btn btn-primary btn-lg" id="retryBtn">Try again</button>
-                        <button type="button" class="btn btn-link" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary btn-lg" id="retryBtn">{{ __('Try again') }}</button>
+                        <button type="button" class="btn btn-link" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
                     </div>
 
                 </div>

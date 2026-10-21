@@ -86,3 +86,8 @@ A new version asks everyone again. The acceptance is stored with the version, th
 ## The school
 `GET /school` → `{name, display_name, color, contact, currency, timezone}`. `display_name` falls back to `name`; `color` (like `#1a73e8`) and `contact` can be null.
 Use it for the app header. It works before the parent has accepted the consent text.
+
+## Language
+Send the phone's language in the `Accept-Language` header (`km` or `en`) on every call: messages come back in that language.
+`GET /language` → `{locale, saved, supported}`. `PUT /language {locale}` saves the parent's choice; a saved choice wins over the header.
+Both work before the consent text is accepted, so the consent screen can be shown in the parent's language.

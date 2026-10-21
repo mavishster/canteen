@@ -83,3 +83,5 @@ require __DIR__ . '/category-hours.php';
 require __DIR__ . '/meal-reports.php';
 
 require __DIR__ . '/super.php';
+
+require __DIR__ . '/locale.php';

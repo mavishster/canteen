@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', 'Meal screen')
+@section('title', __('Meal screen'))
 
 @section('content')
 @if (! auth()->user()->school_id)
-    <div class="alert alert-info">Log in as a school user to serve meals.</div>
+    <div class="alert alert-info">{{ __('Log in as a school user to serve meals.') }}</div>
 @elseif ($meals->isEmpty())
-    <div class="alert alert-warning">No meals are set up yet. Ask an admin to add them under Meals.</div>
+    <div class="alert alert-warning">{{ __('No meals are set up yet. Ask an admin to add them under Meals.') }}</div>
 @else
     <div class="d-flex flex-wrap gap-2 mb-3" id="mealButtons"></div>
 
@@ -13,18 +13,18 @@
         <div class="col-lg-5">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <label class="form-label fw-semibold" for="tapInput">Tap the card</label>
+                    <label class="form-label fw-semibold" for="tapInput">{{ __('Tap the card') }}</label>
                     <form id="tapForm" autocomplete="off">
-                        <input id="tapInput" class="form-control form-control-lg text-center" placeholder="Card or student number" autocomplete="off" autofocus>
+                        <input id="tapInput" class="form-control form-control-lg text-center" placeholder="{{ __('Card or student number') }}" autocomplete="off" autofocus>
                     </form>
-                    <button type="button" class="btn btn-link btn-sm mt-2 p-0" id="autoBtn">Choose the meal by time of day</button>
+                    <button type="button" class="btn btn-link btn-sm mt-2 p-0" id="autoBtn">{{ __('Choose the meal by time of day') }}</button>
                 </div>
             </div>
         </div>
         <div class="col-lg-7">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
-                    <h2 class="h6 text-muted">Served today</h2>
+                    <h2 class="h6 text-muted">{{ __('Served today') }}</h2>
                     <div id="counts" class="fs-4"></div>
                 </div>
             </div>

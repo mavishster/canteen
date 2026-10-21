@@ -79,3 +79,11 @@ Route::prefix('parent')
     ->group(function () {
         Route::get('/school', [\App\Http\Controllers\ParentApi\SchoolController::class, 'show'])->name('parent.school');
     });
+
+// The parent's language (see docs/parent-api.md)
+Route::prefix('parent')
+    ->middleware([\App\Http\Middleware\ForceJsonResponse::class, 'auth:sanctum', \App\Http\Middleware\EnsureParent::class, 'throttle:60,1'])
+    ->group(function () {
+        Route::get('/language', [\App\Http\Controllers\ParentApi\LanguageController::class, 'show'])->name('parent.language');
+        Route::put('/language', [\App\Http\Controllers\ParentApi\LanguageController::class, 'update'])->name('parent.language.update');
+    });

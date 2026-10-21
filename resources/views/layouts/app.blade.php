@@ -12,34 +12,12 @@
     <nav class="navbar navbar-expand navbar-dark bg-dark px-3">
         <a class="navbar-brand" href="{{ route('dashboard') }}">{{ config('app.name') }}</a>
         <ul class="navbar-nav me-auto">
-            @role('super-admin')
-                <li class="nav-item"><a class="nav-link" href="{{ route('super.schools') }}">Schools</a></li>
-            @endrole
-            @hasanyrole('cashier|manager|admin|super-admin')
-                <li class="nav-item"><a class="nav-link" href="{{ route('till') }}">Till</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('till.meals') }}">Meal screen</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('till.sales') }}">Sales</a></li>
-            @endhasanyrole
-            @hasanyrole('manager|admin|super-admin')
-                <li class="nav-item"><a class="nav-link" href="{{ route('manager') }}">Manager</a></li>
-            @endhasanyrole
-            @hasanyrole('admin|super-admin')
-                <li class="nav-item"><a class="nav-link" href="{{ route('admin.students') }}">Students</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('admin.parents') }}">Parents</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('admin.consent') }}">Consent</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('admin.staff') }}">Staff</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('admin.meals') }}">Meals</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('admin.products') }}">Products</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('admin.categories') }}">Categories</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('admin.topups') }}">Top-ups</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('admin.settings') }}">Settings</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('admin.audit') }}">Audit log</a></li>
-            @endhasanyrole
+            @include('layouts.menu')
         </ul>
         <span class="navbar-text me-3">{{ auth()->user()->name }}</span>
         <form method="POST" action="{{ route('logout') }}">
             @csrf
-            <button class="btn btn-sm btn-outline-light">Log out</button>
+            <button class="btn btn-sm btn-outline-light">{{ __('Log out') }}</button>
         </form>
     </nav>
 @endauth

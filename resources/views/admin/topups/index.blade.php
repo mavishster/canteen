@@ -1,8 +1,8 @@
 @extends('layouts.app')
-@section('title', 'Top-ups')
+@section('title', __('Top-ups'))
 
 @section('content')
-<h1 class="h3 mb-3">Top-ups</h1>
+<h1 class="h3 mb-3">{{ __('Top-ups') }}</h1>
 
 @if ($errors->any())
     <div class="alert alert-danger">
@@ -14,12 +14,12 @@
 
 @if ($students->isNotEmpty())
     <div class="card shadow-sm mb-4 border-warning">
-        <div class="card-header fw-semibold">Start a test top-up <span class="badge bg-warning text-dark">development only</span></div>
+        <div class="card-header fw-semibold">{{ __('Start a test top-up') }} <span class="badge bg-warning text-dark">{{ __('development only') }}</span></div>
         <div class="card-body">
             <form method="POST" action="{{ route('admin.topups.store') }}" class="row g-2 align-items-end">
                 @csrf
                 <div class="col-md-5">
-                    <label class="form-label" for="student_id">Student</label>
+                    <label class="form-label" for="student_id">{{ __('Student') }}</label>
                     <select id="student_id" name="student_id" class="form-select" required>
                         @foreach ($students as $student)
                             <option value="{{ $student->id }}" @selected(old('student_id') == $student->id)>{{ $student->name }} ({{ $student->student_code }})</option>
@@ -27,18 +27,18 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label" for="amount">Amount</label>
+                    <label class="form-label" for="amount">{{ __('Amount') }}</label>
                     <input id="amount" name="amount" type="number" min="0" step="0.01" value="{{ old('amount') }}" class="form-control" required>
                 </div>
                 <div class="col-md-2">
-                    <label class="form-label" for="currency">Pay in</label>
+                    <label class="form-label" for="currency">{{ __('Pay in') }}</label>
                     <select id="currency" name="currency" class="form-select">
                         <option value="USD">USD</option>
                         <option value="KHR">KHR</option>
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <button class="btn btn-primary w-100">Start</button>
+                    <button class="btn btn-primary w-100">{{ __('Start') }}</button>
                 </div>
             </form>
         </div>
@@ -49,13 +49,13 @@
     <table class="table table-hover align-middle bg-white">
         <thead class="table-light">
             <tr>
-                <th>Time</th>
-                <th>Student</th>
-                <th class="text-end">Credited</th>
-                <th class="text-end">Paid with</th>
-                <th>Gateway</th>
-                <th>Status</th>
-                <th>Reference</th>
+                <th>{{ __('Time') }}</th>
+                <th>{{ __('Student') }}</th>
+                <th class="text-end">{{ __('Credited') }}</th>
+                <th class="text-end">{{ __('Paid with') }}</th>
+                <th>{{ __('Gateway') }}</th>
+                <th>{{ __('Status') }}</th>
+                <th>{{ __('Reference') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -80,7 +80,7 @@
                 <td><code>{{ $topup->gateway_ref }}</code></td>
             </tr>
         @empty
-            <tr><td colspan="7" class="text-center text-muted py-4">No top-ups yet.</td></tr>
+            <tr><td colspan="7" class="text-center text-muted py-4">{{ __('No top-ups yet.') }}</td></tr>
         @endforelse
         </tbody>
     </table>

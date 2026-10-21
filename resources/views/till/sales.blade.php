@@ -2,7 +2,7 @@
     $fmt = fn ($v) => \App\Support\Money::format((int) $v, $currency);
 @endphp
 @extends('layouts.app')
-@section('title', 'Sales')
+@section('title', __('Sales'))
 
 @section('content')
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
@@ -23,7 +23,7 @@
 <div class="table-responsive">
     <table class="table table-hover align-middle bg-white">
         <thead class="table-light">
-            <tr><th>#</th><th>Time</th><th>Student</th><th>Items</th><th class="text-end">Total</th><th>Cashier</th><th style="min-width: 300px">Refund</th></tr>
+            <tr><th>#</th><th>{{ __('Time') }}</th><th>{{ __('Student') }}</th><th>{{ __('Items') }}</th><th class="text-end">{{ __('Total') }}</th><th>{{ __('Cashier') }}</th><th style="min-width: 300px">{{ __('Refund') }}</th></tr>
         </thead>
         <tbody>
         @forelse ($sales as $sale)
@@ -31,29 +31,29 @@
             <tr class="{{ $sale->voided_at ? 'text-muted' : '' }}">
                 <td>{{ $sale->id }}</td>
                 <td class="text-nowrap">{{ $sale->created_at->timezone($school->timezone)->format('H:i') }}</td>
-                <td>{{ $sale->student->name }}@if ($sale->identified_by === 'manual') <span class="badge bg-warning text-dark" title="Identified by student number, not by card">manual</span>@endif</td>
+                <td>{{ $sale->student->name }}@if ($sale->identified_by === 'manual') <span class="badge bg-warning text-dark" title="{{ __('Identified by student number, not by card') }}">{{ __('manual') }}</span>@endif</td>
                 <td class="small">{{ $sale->items->map(fn ($i) => $i->quantity . '× ' . $i->name)->implode(', ') }}</td>
                 <td class="text-end">{{ $fmt($sale->total) }}</td>
                 <td>{{ $cashiers[$sale->cashier_id] ?? '–' }}</td>
                 <td>
                     @if ($sale->voided_at)
-                        <span class="badge bg-secondary">Refunded</span>
+                        <span class="badge bg-secondary">{{ __('Refunded') }}</span>
                     @elseif ($refund && $refund->status === 'pending')
-                        <span class="badge bg-warning text-dark">Refund pending</span>
+                        <span class="badge bg-warning text-dark">{{ __('Refund pending') }}</span>
                     @else
                         <form method="POST" action="{{ route('till.sales.refund', $sale) }}" class="d-flex gap-1">
                             @csrf
-                            <input name="reason" class="form-control form-control-sm" placeholder="Reason" maxlength="255" required>
+                            <input name="reason" class="form-control form-control-sm" placeholder="{{ __('Reason') }}" maxlength="255" required>
                             <button class="btn btn-sm btn-outline-danger text-nowrap">{{ $isManager ? 'Refund now' : 'Request refund' }}</button>
                         </form>
                         @if ($refund && $refund->status === 'rejected')
-                            <div class="small text-muted mt-1">The last request was rejected.</div>
+                            <div class="small text-muted mt-1">{{ __('The last request was rejected.') }}</div>
                         @endif
                     @endif
                 </td>
             </tr>
         @empty
-            <tr><td colspan="7" class="text-center text-muted py-4">No sales yet.</td></tr>
+            <tr><td colspan="7" class="text-center text-muted py-4">{{ __('No sales yet.') }}</td></tr>
         @endforelse
         </tbody>
     </table>

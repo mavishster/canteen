@@ -1,12 +1,12 @@
 @extends('layouts.app')
-@section('title', 'Students')
+@section('title', __('Students'))
 
 @section('content')
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-    <h1 class="h3 mb-0">Students</h1>
+    <h1 class="h3 mb-0">{{ __('Students') }}</h1>
     <form method="GET" class="d-flex" role="search">
-        <input name="q" value="{{ request('q') }}" class="form-control me-2" placeholder="Search name or code">
-        <button class="btn btn-outline-secondary">Search</button>
+        <input name="q" value="{{ request('q') }}" class="form-control me-2" placeholder="{{ __('Search name or code') }}">
+        <button class="btn btn-outline-secondary">{{ __('Search') }}</button>
     </form>
 </div>
 
@@ -19,26 +19,26 @@
 @endif
 
 @if (! auth()->user()->school_id)
-    <div class="alert alert-info">You are viewing all schools. Log in as a school admin to add students.</div>
+    <div class="alert alert-info">{{ __('You are viewing all schools. Log in as a school admin to add students.') }}</div>
 @else
     <div class="card shadow-sm mb-4">
         <div class="card-body">
             <form method="POST" action="{{ route('admin.students.store') }}" class="row g-2 align-items-end">
                 @csrf
                 <div class="col-md-3">
-                    <label class="form-label" for="student_code">Student code</label>
+                    <label class="form-label" for="student_code">{{ __('Student code') }}</label>
                     <input id="student_code" name="student_code" value="{{ old('student_code') }}" class="form-control" required>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label" for="name">Name</label>
+                    <label class="form-label" for="name">{{ __('Name') }}</label>
                     <input id="name" name="name" value="{{ old('name') }}" class="form-control" required>
                 </div>
                 <div class="col-md-2">
-                    <label class="form-label" for="grade">Grade</label>
+                    <label class="form-label" for="grade">{{ __('Grade') }}</label>
                     <input id="grade" name="grade" type="number" min="1" max="12" value="{{ old('grade') }}" class="form-control">
                 </div>
                 <div class="col-md-3">
-                    <button class="btn btn-primary w-100">Add student</button>
+                    <button class="btn btn-primary w-100">{{ __('Add student') }}</button>
                 </div>
             </form>
         </div>
@@ -49,12 +49,12 @@
     <table class="table table-hover align-middle bg-white">
         <thead class="table-light">
             <tr>
-                <th>Code</th>
-                <th>Name</th>
-                <th>Grade</th>
-                <th class="text-end">Balance</th>
-                <th>Card</th>
-                <th class="text-end">Actions</th>
+                <th>{{ __('Code') }}</th>
+                <th>{{ __('Name') }}</th>
+                <th>{{ __('Grade') }}</th>
+                <th class="text-end">{{ __('Balance') }}</th>
+                <th>{{ __('Card') }}</th>
+                <th class="text-end">{{ __('Actions') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -70,7 +70,7 @@
                         <code>{{ $card->uid }}</code>
                         <span class="badge {{ $card->status === 'active' ? 'bg-success' : 'bg-warning text-dark' }}">{{ $card->status }}</span>
                     @else
-                        <span class="text-muted">No card</span>
+                        <span class="text-muted">{{ __('No card') }}</span>
                     @endif
                 </td>
                 <td class="text-end text-nowrap">
@@ -89,7 +89,7 @@
                 </td>
             </tr>
         @empty
-            <tr><td colspan="6" class="text-center text-muted py-4">No students yet.</td></tr>
+            <tr><td colspan="6" class="text-center text-muted py-4">{{ __('No students yet.') }}</td></tr>
         @endforelse
         </tbody>
     </table>
@@ -101,20 +101,20 @@
     <div class="modal-dialog">
         <form class="modal-content" id="cardForm" autocomplete="off">
             <div class="modal-header">
-                <h5 class="modal-title"><span id="cardMode">Bind card</span> · <span id="cardStudent"></span></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title"><span id="cardMode">{{ __('Bind card') }}</span> · <span id="cardStudent"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('Close') }}"></button>
             </div>
             <div class="modal-body">
-                <p class="text-muted mb-2">Tap the card on the reader, or type the card number, then press Enter.</p>
+                <p class="text-muted mb-2">{{ __('Tap the card on the reader, or type the card number, then press Enter.') }}</p>
                 <p class="small text-warning-emphasis d-none" id="cardReplaceNote">
-                    The current card will stop working. The balance stays on the student's account.
+                    {{ __('The current card will stop working. The balance stays on the student\'s account.') }}
                 </p>
-                <input id="cardUid" class="form-control form-control-lg" placeholder="Card number (UID)" required>
+                <input id="cardUid" class="form-control form-control-lg" placeholder="{{ __('Card number (UID)') }}" required>
                 <div id="cardError" class="text-danger mt-2 d-none"></div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-primary">Save card</button>
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                <button type="submit" class="btn btn-primary">{{ __('Save card') }}</button>
             </div>
         </form>
     </div>

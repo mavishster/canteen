@@ -7,7 +7,7 @@
 @section('title', 'Rules · ' . $student->name)
 
 @section('content')
-<a href="{{ route('admin.students') }}" class="btn btn-link px-0 mb-2">← Students</a>
+<a href="{{ route('admin.students') }}" class="btn btn-link px-0 mb-2">{{ __('← Students') }}</a>
 
 <h1 class="h3 mb-1">{{ $student->name }}</h1>
 <p class="text-muted">
@@ -24,10 +24,10 @@
 @endif
 
 <div class="card shadow-sm mb-4">
-    <div class="card-header fw-semibold">Spending limits</div>
+    <div class="card-header fw-semibold">{{ __('Spending limits') }}</div>
     <div class="card-body">
         <p class="text-muted small">
-            A personal limit can be lower than the school maximum, never higher. Leave a box empty for no personal limit.
+            {{ __('A personal limit can be lower than the school maximum, never higher. Leave a box empty for no personal limit.') }}
         </p>
         <form method="POST" action="{{ route('admin.students.limits', $student) }}" class="row g-3 align-items-start">
             @csrf
@@ -35,32 +35,32 @@
                 <label class="form-label" for="daily_limit">Daily limit ({{ $symbol }})</label>
                 <input id="daily_limit" name="daily_limit" type="number" min="0" step="{{ $step }}"
                        value="{{ old('daily_limit', $account->daily_limit !== null ? \App\Support\Money::toMajor($account->daily_limit, $currency) : '') }}"
-                       class="form-control" placeholder="No personal limit">
+                       class="form-control" placeholder="{{ __('No personal limit') }}">
                 <div class="form-text">School maximum: {{ $fmt($caps['daily']) }}</div>
             </div>
             <div class="col-md-4">
                 <label class="form-label" for="weekly_limit">Weekly limit ({{ $symbol }})</label>
                 <input id="weekly_limit" name="weekly_limit" type="number" min="0" step="{{ $step }}"
                        value="{{ old('weekly_limit', $account->weekly_limit !== null ? \App\Support\Money::toMajor($account->weekly_limit, $currency) : '') }}"
-                       class="form-control" placeholder="No personal limit">
+                       class="form-control" placeholder="{{ __('No personal limit') }}">
                 <div class="form-text">School maximum: {{ $fmt($caps['weekly']) }}</div>
             </div>
             <div class="col-md-4 pt-md-4">
-                <button class="btn btn-primary mt-md-2">Save limits</button>
+                <button class="btn btn-primary mt-md-2">{{ __('Save limits') }}</button>
             </div>
         </form>
     </div>
 </div>
 
 <div class="card shadow-sm">
-    <div class="card-header fw-semibold">Banned products and categories</div>
+    <div class="card-header fw-semibold">{{ __('Banned products and categories') }}</div>
     <div class="card-body">
         <form method="POST" action="{{ route('admin.students.bans', $student) }}" class="row g-2 align-items-end mb-3">
             @csrf
             <div class="col-md-8">
-                <label class="form-label" for="ban">Add a ban</label>
+                <label class="form-label" for="ban">{{ __('Add a ban') }}</label>
                 <select id="ban" name="ban" class="form-select" required>
-                    <option value="">Choose a product or category…</option>
+                    <option value="">{{ __('Choose a product or category…') }}</option>
                     @if ($categories->isNotEmpty())
                         <optgroup label="Whole category">
                             @foreach ($categories as $category)
@@ -78,13 +78,13 @@
                 </select>
             </div>
             <div class="col-md-4">
-                <button class="btn btn-outline-danger w-100">Ban</button>
+                <button class="btn btn-outline-danger w-100">{{ __('Ban') }}</button>
             </div>
         </form>
 
         <table class="table align-middle mb-0">
             <thead class="table-light">
-                <tr><th>Type</th><th>Name</th><th class="text-end">Action</th></tr>
+                <tr><th>{{ __('Type') }}</th><th>{{ __('Name') }}</th><th class="text-end">{{ __('Action') }}</th></tr>
             </thead>
             <tbody>
             @forelse ($bans as $ban)
@@ -94,12 +94,12 @@
                     <td class="text-end">
                         <form method="POST" action="{{ route('admin.bans.delete', $ban) }}">
                             @csrf
-                            <button class="btn btn-sm btn-outline-secondary">Remove</button>
+                            <button class="btn btn-sm btn-outline-secondary">{{ __('Remove') }}</button>
                         </form>
                     </td>
                 </tr>
             @empty
-                <tr><td colspan="3" class="text-center text-muted py-3">Nothing is banned for this student.</td></tr>
+                <tr><td colspan="3" class="text-center text-muted py-3">{{ __('Nothing is banned for this student.') }}</td></tr>
             @endforelse
             </tbody>
         </table>

@@ -30,7 +30,7 @@ class EnsureParent
             return response()->json(['message' => $e->getMessage(), 'reason' => $e->reason], $e->status);
         }
 
-        if (! $request->routeIs('parent.consent', 'parent.consent.accept', 'parent.logout', 'parent.school')
+        if (! $request->routeIs('parent.consent', 'parent.consent.accept', 'parent.logout', 'parent.school', 'parent.language', 'parent.language.update')
             && app(ConsentService::class)->mustAccept($user)) {
             return response()->json([
                 'message' => "Please read and accept the school's terms first.",

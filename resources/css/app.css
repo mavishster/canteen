@@ -1,1 +1,6 @@
 body { background: #f5f6f8; }
+
+/* Khmer: use a font that has the Khmer letters (every modern system has one of these) */
+html[lang="km"] body {
+    font-family: "Noto Sans Khmer", "Khmer UI", "Leelawadee UI", "Khmer OS", system-ui, sans-serif;
+}

@@ -1,19 +1,19 @@
 @extends('layouts.app')
-@section('title', 'Schools')
+@section('title', __('Schools'))
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="h3 mb-0">Schools</h1>
-    <a href="{{ route('super.schools.create') }}" class="btn btn-primary">New school</a>
+    <h1 class="h3 mb-0">{{ __('Schools') }}</h1>
+    <a href="{{ route('super.schools.create') }}" class="btn btn-primary">{{ __('New school') }}</a>
 </div>
 
 <div class="table-responsive">
     <table class="table table-hover bg-white align-middle">
         <thead class="table-light">
             <tr>
-                <th>School</th><th>Currency · time zone</th><th>SIS branch</th>
-                <th class="text-end">Students</th><th class="text-end">Parents</th><th class="text-end">Staff</th>
-                <th class="text-end">Held in wallets</th><th>Last money activity</th><th></th>
+                <th>{{ __('School') }}</th><th>{{ __('Currency · time zone') }}</th><th>{{ __('SIS branch') }}</th>
+                <th class="text-end">{{ __('Students') }}</th><th class="text-end">{{ __('Parents') }}</th><th class="text-end">{{ __('Staff') }}</th>
+                <th class="text-end">{{ __('Held in wallets') }}</th><th>{{ __('Last money activity') }}</th><th></th>
             </tr>
         </thead>
         <tbody>
@@ -28,13 +28,13 @@
                 <td class="text-end">{{ $staffCounts[$school->id] ?? 0 }}</td>
                 <td class="text-end">{{ \App\Support\Money::format((int) ($wallets[$school->id] ?? 0), $school->currency) }}</td>
                 <td class="small">{{ $last ? \Carbon\Carbon::parse($last)->timezone($school->timezone)->format('Y-m-d H:i') : '–' }}</td>
-                <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="{{ route('super.schools.show', $school) }}">Open</a></td>
+                <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="{{ route('super.schools.show', $school) }}">{{ __('Open') }}</a></td>
             </tr>
         @empty
-            <tr><td colspan="9" class="text-center text-muted py-4">No schools yet.</td></tr>
+            <tr><td colspan="9" class="text-center text-muted py-4">{{ __('No schools yet.') }}</td></tr>
         @endforelse
         </tbody>
     </table>
 </div>
-<p class="small text-muted">Students shows active / all. Staff are admins, managers and cashiers.</p>
+<p class="small text-muted">{{ __('Students shows active / all. Staff are admins, managers and cashiers.') }}</p>
 @endsection

@@ -1,23 +1,23 @@
 @extends('layouts.app')
-@section('title', 'Stock history')
+@section('title', __('Stock history'))
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="h3 mb-0">Stock history</h1>
-    <a href="{{ route('admin.products') }}" class="btn btn-outline-secondary btn-sm">← Products</a>
+    <h1 class="h3 mb-0">{{ __('Stock history') }}</h1>
+    <a href="{{ route('admin.products') }}" class="btn btn-outline-secondary btn-sm">{{ __('← Products') }}</a>
 </div>
 
 <div class="table-responsive">
     <table class="table table-hover align-middle bg-white">
         <thead class="table-light">
             <tr>
-                <th>Time</th>
-                <th>Product</th>
-                <th>Type</th>
-                <th class="text-end">Change</th>
-                <th class="text-end">Stock after</th>
-                <th>By</th>
-                <th>Note</th>
+                <th>{{ __('Time') }}</th>
+                <th>{{ __('Product') }}</th>
+                <th>{{ __('Type') }}</th>
+                <th class="text-end">{{ __('Change') }}</th>
+                <th class="text-end">{{ __('Stock after') }}</th>
+                <th>{{ __('By') }}</th>
+                <th>{{ __('Note') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -35,7 +35,7 @@
                 <td class="text-muted small">{{ $m->note ?? ($m->type === 'sale' ? '' : '') }}</td>
             </tr>
         @empty
-            <tr><td colspan="7" class="text-center text-muted py-4">No stock movements yet.</td></tr>
+            <tr><td colspan="7" class="text-center text-muted py-4">{{ __('No stock movements yet.') }}</td></tr>
         @endforelse
         </tbody>
     </table>

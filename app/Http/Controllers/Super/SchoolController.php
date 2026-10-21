@@ -170,8 +170,8 @@ class SchoolController extends Controller
 
         $school->update([
             'name' => trim($data['name']),
-            'currency' => $data['currency'] ?: $school->currency,
-            'timezone' => $data['timezone'] ?: $school->timezone,
+            'currency' => ($data['currency'] ?? null) ?: $school->currency,
+            'timezone' => ($data['timezone'] ?? null) ?: $school->timezone,
             'sis_branch_id' => $newBranch,
             'settings' => $settings,
         ]);
