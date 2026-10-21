@@ -14,6 +14,8 @@ it('has a valid Khmer file with no blank translation', function () {
 it('keeps the :placeholders of a phrase in its Khmer', function () {
     $km = json_decode(file_get_contents(base_path('lang/km.json')), true);
 
+    expect($km)->toBeArray();
+
     foreach ($km as $phrase => $khmer) {
         preg_match_all('/:[a-z_]+/', (string) $phrase, $in);
 

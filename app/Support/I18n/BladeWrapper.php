@@ -9,6 +9,10 @@ namespace App\Support\I18n;
  * It leaves alone: text mixed with {{ }} values (a person must decide how to split those), anything inside
  * scripts, styles, code and textareas, HTML entities, short codes such as USD, and anything with unusual characters.
  * Running it twice changes nothing the second time.
+ *
+ * The third thing wrap() returns is a list of what it left for a person:
+ *   ['mixed', text]  text with a value inside it        ['expr', echo]  English words inside a {{ }}
+ *   ['js', text]     an English string inside a script
  */
 class BladeWrapper
 {
@@ -20,12 +24,16 @@ class BladeWrapper
     /** @var array<int, string> */
     private array $keys = [];
 
-    /** @return array{0: string, 1: array<int, string>} the new source, and the English texts that were wrapped */
+    /** @var array<int, array{0: string, 1: string}> */
+    private array $manual = [];
+
+    /** @return array{0: string, 1: array<int, string>, 2: array<int, array{0: string, 1: string}>} */
     public function wrap(string $source): array
     {
         $this->stash = [];
         $this->counter = 0;
         $this->keys = [];
+        $this->manual = [];
 
         $src = $this->wrapPageTitle($source);
 
@@ -39,13 +47,26 @@ class BladeWrapper
 
         $src = $this->wrapTextNodes($src);
         $src = $this->wrapAttributes($src);
+        $this->collectManual();
 
         // Put it all back, the last thing set aside first (a directive can hold an expression)
+        $src = $this->restoreRaw($src);
+
+        return [$src, $this->keys, $this->manual];
+    }
+
+    private function restoreRaw(string $src): string
+    {
         foreach (array_reverse($this->stash, true) as $token => $original) {
             $src = str_replace($token, $original, $src);
         }
 
-        return [$src, $this->keys];
+        return $src;
+    }
+
+    private function restoreTidy(string $text): string
+    {
+        return trim((string) preg_replace('~\s+~u', ' ', $this->restoreRaw($text)));
     }
 
     /** @section('title', 'Products')  ->  @section('title', __('Products')) */
@@ -84,7 +105,14 @@ class BladeWrapper
             $text = $m[1];
 
             if (str_contains($text, "\x00E")) {
-                return $m[0];   // text mixed with a value: left for a person
+                // Text mixed with a value: left for a person, and listed
+                $plain = preg_replace('~\x00[EPD]\d+\x00~', '', $text);
+
+                if (preg_match('~\p{L}~u', (string) $plain)) {
+                    $this->manual[] = ['mixed', $this->restoreTidy($text)];
+                }
+
+                return $m[0];
             }
 
             // A directive (@if / @else) only separates pieces of text; each piece is its own phrase
@@ -132,6 +160,45 @@ class BladeWrapper
 
             return $m[1] . '="{{ __(\'' . addcslashes($key, "'\\") . '\') }}"';
         }, $src) ?? $src;
+    }
+
+    /** English words inside a {{ }} and inside a script: the things the automatic wrapping cannot decide. */
+    private function collectManual(): void
+    {
+        foreach ($this->stash as $token => $original) {
+            if (str_starts_with($token, "\x00E")) {
+                if (str_contains($original, '__(') || str_contains($original, 'trans(')) {
+                    continue;
+                }
+
+                if (preg_match_all('~\'([A-Z][^\']{2,})\'|"([A-Z][^"]{2,})"~', $original, $found)) {
+                    foreach (array_merge($found[1], $found[2]) as $string) {
+                        // a date format such as 'Y-m-d H:i' is not a phrase
+                        if ($string !== '' && ! preg_match('~^[YmdHisjnDFMyAaGgh:\-/ ,.]+$~', $string)) {
+                            $this->manual[] = ['expr', trim((string) preg_replace('~\s+~u', ' ', $original))];
+
+                            break;
+                        }
+                    }
+                }
+            } elseif (preg_match('~^<script\b~i', $original)) {
+                foreach ($this->jsStrings($original) as $string) {
+                    $this->manual[] = ['js', $string];
+                }
+            }
+        }
+    }
+
+    /** @return array<int, string> the English-looking strings in a piece of JavaScript */
+    public function jsStrings(string $js): array
+    {
+        preg_match_all('~(["\'])((?:(?!\1)[^\\\\\n]|\\\\.){5,160})\1~u', $js, $m);
+
+        return collect($m[2])
+            ->filter(fn ($s) => preg_match('~^[A-Z][^<>{}=$]*[a-z]~u', $s) && (str_contains($s, ' ') || mb_strlen($s) >= 8))
+            ->unique()
+            ->values()
+            ->all();
     }
 
     /** Is this text a phrase a person reads, and safe to hand to __()? */
