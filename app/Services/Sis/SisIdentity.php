@@ -11,7 +11,7 @@ final class SisIdentity
         return match (config('sis.driver')) {
             'database' => app(SisHttpAuthClient::class),
             'fake' => app(FakeSisIdentity::class),
-            default => throw new InvalidArgumentException("Unknown SIS driver '" . config('sis.driver') . "'."),
+            default => throw new InvalidArgumentException(__('Unknown SIS driver \':value\'.', ['value' => config('sis.driver')])),
         };
     }
 
@@ -20,7 +20,7 @@ final class SisIdentity
         return match (config('sis.driver')) {
             'database' => app(SisDatabaseParentClient::class),
             'fake' => app(FakeSisIdentity::class),
-            default => throw new InvalidArgumentException("Unknown SIS driver '" . config('sis.driver') . "'."),
+            default => throw new InvalidArgumentException(__('Unknown SIS driver \':value\'.', ['value' => config('sis.driver')])),
         };
     }
 }

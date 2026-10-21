@@ -13,12 +13,12 @@ class SaleException extends RuntimeException
 
     public static function emptyCart(): self
     {
-        return new self('empty_cart', 'The cart is empty.');
+        return new self('empty_cart', __('The cart is empty.'));
     }
 
     public static function invalidProduct(): self
     {
-        return new self('invalid_product', 'A product in the cart is no longer available. Please start the sale again.');
+        return new self('invalid_product', __('A product in the cart is no longer available. Please start the sale again.'));
     }
 
     public static function outOfStock(string $name, int $available): self

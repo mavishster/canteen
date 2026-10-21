@@ -28,11 +28,11 @@ class MealCollectionService
     public function collect(Student $student, int $schoolId, ?int $operatorId, int $mealTypeId, string $identifiedBy, string $key): MealConsumption
     {
         if ($key === '' || mb_strlen($key) > 64) {
-            throw new InvalidArgumentException('The key must be between 1 and 64 characters.');
+            throw new InvalidArgumentException(__('The key must be between 1 and 64 characters.'));
         }
 
         if (! in_array($identifiedBy, ['card', 'manual'], true)) {
-            throw new InvalidArgumentException('Unknown identification method.');
+            throw new InvalidArgumentException(__('Unknown identification method.'));
         }
 
         return DB::transaction(function () use ($student, $schoolId, $operatorId, $mealTypeId, $identifiedBy, $key) {

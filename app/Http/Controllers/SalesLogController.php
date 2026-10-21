@@ -17,7 +17,7 @@ class SalesLogController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        abort_unless($user->school_id, 403, 'Log in as a school user to see sales.');
+        abort_unless($user->school_id, 403, __('Log in as a school user to see sales.'));
 
         $request->validate(['date' => ['nullable', 'date_format:Y-m-d']]);
 

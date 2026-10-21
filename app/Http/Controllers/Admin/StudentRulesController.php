@@ -62,7 +62,7 @@ class StudentRulesController extends Controller
             return back()->withErrors(['limits' => $e->getMessage()])->withInput();
         }
 
-        return redirect()->route('admin.students.rules', $student)->with('status', 'Limits saved.');
+        return redirect()->route('admin.students.rules', $student)->with('status', __('Limits saved.'));
     }
 
     public function addBan(Request $request, Student $student, RuleService $rules)
@@ -83,7 +83,7 @@ class StudentRulesController extends Controller
             return back()->withErrors(['ban' => $e->getMessage()]);
         }
 
-        return redirect()->route('admin.students.rules', $student)->with('status', 'Ban added.');
+        return redirect()->route('admin.students.rules', $student)->with('status', __('Ban added.'));
     }
 
     public function removeBan(StudentBan $ban, RuleService $rules)
@@ -91,6 +91,6 @@ class StudentRulesController extends Controller
         $studentId = $ban->student_id;
         $rules->unban($ban);
 
-        return redirect()->route('admin.students.rules', $studentId)->with('status', 'Ban removed.');
+        return redirect()->route('admin.students.rules', $studentId)->with('status', __('Ban removed.'));
     }
 }

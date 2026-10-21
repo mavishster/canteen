@@ -37,7 +37,7 @@ class ProductController extends Controller
         $schoolId = $request->user()->school_id;
 
         if (! $schoolId) {
-            return back()->withErrors(['name' => 'Log in as a school admin to add products.']);
+            return back()->withErrors(['name' => __('Log in as a school admin to add products.')]);
         }
 
         $data = $request->validate([
@@ -66,7 +66,7 @@ class ProductController extends Controller
             $stock->receive($product, (int) $data['stock'], $request->user()->id, 'Opening stock');
         }
 
-        return redirect()->route('admin.products')->with('status', 'Product added.');
+        return redirect()->route('admin.products')->with('status', __('Product added.'));
     }
 
     public function setCategory(Request $request, Product $product)
@@ -77,7 +77,7 @@ class ProductController extends Controller
 
         $product->update(['category_id' => $data['category_id'] ?? null]);
 
-        return redirect()->route('admin.products')->with('status', "{$product->name}: category saved.");
+        return redirect()->route('admin.products')->with('status', __(':name: category saved.', ['name' => $product->name]));
     }
 
     public function update(Request $request, Product $product)
@@ -89,7 +89,7 @@ class ProductController extends Controller
         $currency = School::findOrFail($product->school_id)->currency;
         $product->update(['price' => $this->minorPrice($data['price'], $currency)]);
 
-        return redirect()->route('admin.products')->with('status', 'Price updated.');
+        return redirect()->route('admin.products')->with('status', __('Price updated.'));
     }
 
     public function toggle(Product $product)
@@ -125,7 +125,7 @@ class ProductController extends Controller
             return back()->withErrors(['stock' => $e->getMessage()]);
         }
 
-        return redirect()->route('admin.products')->with('status', "Received {$data['quantity']} × {$product->name}.");
+        return redirect()->route('admin.products')->with('status', __('Received :quantity × :name.', ['quantity' => $data['quantity'], 'name' => $product->name]));
     }
 
     public function count(Request $request, Product $product, StockService $stock)
@@ -141,7 +141,7 @@ class ProductController extends Controller
             return back()->withErrors(['stock' => $e->getMessage()]);
         }
 
-        return redirect()->route('admin.products')->with('status', "{$product->name}: stock set to {$data['counted']}.");
+        return redirect()->route('admin.products')->with('status', __(':name: stock set to :counted.', ['name' => $product->name, 'counted' => $data['counted']]));
     }
 
     public function movements()
@@ -166,7 +166,7 @@ class ProductController extends Controller
         $minor = Money::toMinor($value, $currency);
 
         if ($minor < 1) {
-            throw ValidationException::withMessages(['price' => 'The price is too small.']);
+            throw ValidationException::withMessages(['price' => __('The price is too small.')]);
         }
 
         return $minor;

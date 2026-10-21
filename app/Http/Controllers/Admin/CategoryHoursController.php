@@ -37,7 +37,7 @@ class CategoryHoursController extends Controller
 
         if (($from === null) !== ($to === null) || ($from !== null && $from >= $to)) {
             throw ValidationException::withMessages([
-                'category' => "{$category->name}: set both times, with the start earlier than the end, or leave both empty.",
+                'category' => __(':name: set both times, with the start earlier than the end, or leave both empty.', ['name' => $category->name]),
             ]);
         }
 
@@ -49,7 +49,7 @@ class CategoryHoursController extends Controller
             'sell_days' => ($days === [] || count($days) === 7) ? null : $days,   // every day is the same as no limit
         ]);
 
-        return redirect()->route('admin.category-hours')->with('status', "{$category->name}: selling hours saved.");
+        return redirect()->route('admin.category-hours')->with('status', __(':name: selling hours saved.', ['name' => $category->name]));
     }
 
     public function clear(Request $request, Category $category)
@@ -58,12 +58,12 @@ class CategoryHoursController extends Controller
 
         $category->update(['sell_from' => null, 'sell_to' => null, 'sell_days' => null]);
 
-        return redirect()->route('admin.category-hours')->with('status', "{$category->name} can be bought at any time again.");
+        return redirect()->route('admin.category-hours')->with('status', __(':name can be bought at any time again.', ['name' => $category->name]));
     }
 
     private function school(Request $request): School
     {
-        abort_unless($request->user()->school_id, 403, 'Log in as a school admin to change selling hours.');
+        abort_unless($request->user()->school_id, 403, __('Log in as a school admin to change selling hours.'));
 
         return School::findOrFail($request->user()->school_id);
     }

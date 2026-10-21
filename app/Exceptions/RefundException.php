@@ -13,16 +13,16 @@ class RefundException extends RuntimeException
 
     public static function alreadyRefunded(): self
     {
-        return new self('already_refunded', 'This sale has already been refunded.');
+        return new self('already_refunded', __('This sale has already been refunded.'));
     }
 
     public static function refundPending(): self
     {
-        return new self('refund_pending', 'A refund request for this sale is already waiting for approval.');
+        return new self('refund_pending', __('A refund request for this sale is already waiting for approval.'));
     }
 
     public static function alreadyDecided(): self
     {
-        return new self('already_decided', 'This refund request has already been decided.');
+        return new self('already_decided', __('This refund request has already been decided.'));
     }
 }

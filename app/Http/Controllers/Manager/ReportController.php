@@ -156,7 +156,7 @@ class ReportController extends Controller
     /** @return array{0: School, 1: Carbon, 2: Carbon, 3: Carbon} school, the day, and its UTC start and end */
     private function period(Request $request): array
     {
-        abort_unless($request->user()->school_id, 403, 'Log in as a school user to see reports.');
+        abort_unless($request->user()->school_id, 403, __('Log in as a school user to see reports.'));
 
         $request->validate(['date' => ['nullable', 'date_format:Y-m-d']]);
 

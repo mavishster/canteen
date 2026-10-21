@@ -60,7 +60,7 @@ class StaffController extends Controller
             [], ['role' => $data['role']], $schoolId, $user
         );
 
-        return redirect()->route('admin.staff')->with('status', "{$user->name} can now sign in as {$data['role']}.");
+        return redirect()->route('admin.staff')->with('status', __(':name can now sign in as :role.', ['name' => $user->name, 'role' => $data['role']]));
     }
 
     public function role(Request $request, User $staffUser)
@@ -70,11 +70,11 @@ class StaffController extends Controller
         $data = $request->validate(['role' => ['required', Rule::in(self::ROLES)]]);
 
         if ($this->isMe($request, $staffUser)) {
-            return back()->withErrors(['staff' => 'You cannot change your own role.']);
+            return back()->withErrors(['staff' => __('You cannot change your own role.')]);
         }
 
         if ($staffUser->roles->isEmpty()) {
-            return back()->withErrors(['staff' => 'This account is disabled. Use Enable, which also sets a new password.']);
+            return back()->withErrors(['staff' => __('This account is disabled. Use Enable, which also sets a new password.')]);
         }
 
         $previous = $staffUser->roles->first()->name;
@@ -88,7 +88,7 @@ class StaffController extends Controller
             ['role' => $previous], ['role' => $data['role']], (int) $staffUser->school_id, $staffUser
         );
 
-        return back()->with('status', "{$staffUser->name} is now {$data['role']}.");
+        return back()->with('status', __(':name is now :role.', ['name' => $staffUser->name, 'role' => $data['role']]));
     }
 
     public function password(Request $request, User $staffUser)
@@ -101,7 +101,7 @@ class StaffController extends Controller
         $staffUser->forceFill(['password' => Hash::make($data['password'])])->save();
         $this->signOut($request, $staffUser);
 
-        return back()->with('status', "New password set for {$staffUser->name}. They have been signed out everywhere.");
+        return back()->with('status', __('New password set for :name. They have been signed out everywhere.', ['name' => $staffUser->name]));
     }
 
     public function disable(Request $request, User $staffUser)
@@ -109,7 +109,7 @@ class StaffController extends Controller
         $this->ownStaff($request, $staffUser);
 
         if ($this->isMe($request, $staffUser)) {
-            return back()->withErrors(['staff' => 'You cannot disable your own account.']);
+            return back()->withErrors(['staff' => __('You cannot disable your own account.')]);
         }
 
         $previous = $staffUser->roles->first()?->name;
@@ -124,7 +124,7 @@ class StaffController extends Controller
             ['role' => $previous], [], (int) $staffUser->school_id, $staffUser
         );
 
-        return back()->with('status', "{$staffUser->name} is disabled and has been signed out.");
+        return back()->with('status', __(':name is disabled and has been signed out.', ['name' => $staffUser->name]));
     }
 
     public function enable(Request $request, User $staffUser)
@@ -137,7 +137,7 @@ class StaffController extends Controller
         ]);
 
         if ($staffUser->roles->isNotEmpty()) {
-            return back()->withErrors(['staff' => 'This account is already active.']);
+            return back()->withErrors(['staff' => __('This account is already active.')]);
         }
 
         $this->ensureRoles();
@@ -150,14 +150,14 @@ class StaffController extends Controller
             [], ['role' => $data['role']], (int) $staffUser->school_id, $staffUser
         );
 
-        return back()->with('status', "{$staffUser->name} is active again as {$data['role']}.");
+        return back()->with('status', __(':name is active again as :role.', ['name' => $staffUser->name, 'role' => $data['role']]));
     }
 
     // ------------------------------------------------------------------ helpers
 
     private function schoolId(Request $request): int
     {
-        abort_unless($request->user()->school_id, 403, 'Log in as a school admin to manage staff.');
+        abort_unless($request->user()->school_id, 403, __('Log in as a school admin to manage staff.'));
 
         return (int) $request->user()->school_id;
     }

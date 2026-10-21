@@ -27,7 +27,7 @@ class SisStudentImporter
     public function import(School $school, SisClient $client, bool $dryRun = false): ImportReport
     {
         if (! $school->sis_branch_id) {
-            throw new InvalidArgumentException("School {$school->code} has no sis_branch_id.");
+            throw new InvalidArgumentException(__('School :code has no sis_branch_id.', ['code' => $school->code]));
         }
 
         $sisStudents = $client->students((int) $school->sis_branch_id);

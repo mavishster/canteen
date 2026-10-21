@@ -34,6 +34,6 @@ class PaymentPageController extends Controller
         $result = $topUps->handleCallback($fake, ['ref' => $ref, 'sig' => $fake->signature($ref)]);
 
         return redirect()->route('admin.topups')
-            ->with('status', "Top-up {$result->gateway_ref}: {$result->status}.");
+            ->with('status', __('Top-up :gateway_ref: :status.', ['gateway_ref' => $result->gateway_ref, 'status' => $result->status]));
     }
 }

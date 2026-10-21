@@ -89,7 +89,7 @@ class SchoolSettingsController extends Controller
             $days = collect($request->input('days', []))->map(fn ($d) => (int) $d)->unique()->sort()->values()->all();
 
             if (! $days) {
-                return back()->withErrors(['days' => 'Choose at least one day.'])->withInput();
+                return back()->withErrors(['days' => __('Choose at least one day.')])->withInput();
             }
 
             $windows = [];
@@ -103,7 +103,7 @@ class SchoolSettingsController extends Controller
 
                 if (! $from || ! $to || $from >= $to) {
                     return back()
-                        ->withErrors(['windows' => 'Each buying window needs a start time that is earlier than its end time.'])
+                        ->withErrors(['windows' => __('Each buying window needs a start time that is earlier than its end time.')])
                         ->withInput();
                 }
 
@@ -140,12 +140,12 @@ class SchoolSettingsController extends Controller
 
         $school->update($attributes);
 
-        return redirect()->route('admin.settings')->with('status', 'Settings saved.');
+        return redirect()->route('admin.settings')->with('status', __('Settings saved.'));
     }
 
     private function school(Request $request): School
     {
-        abort_unless($request->user()->school_id, 403, 'Log in as a school admin to change school settings.');
+        abort_unless($request->user()->school_id, 403, __('Log in as a school admin to change school settings.'));
 
         return School::findOrFail($request->user()->school_id);
     }

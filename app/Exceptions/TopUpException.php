@@ -14,16 +14,16 @@ class TopUpException extends RuntimeException
 
     public static function invalidAmount(): self
     {
-        return new self('invalid_amount', 'Enter an amount greater than zero.');
+        return new self('invalid_amount', __('Enter an amount greater than zero.'));
     }
 
     public static function unsupportedCurrency(string $currency): self
     {
-        return new self('unsupported_currency', "Payments in {$currency} are not supported.");
+        return new self('unsupported_currency', __('Payments in :currency are not supported.', ['currency' => $currency]));
     }
 
     public static function belowMinimum(int $min, string $currency): self
     {
-        return new self('below_minimum', 'The minimum top-up is ' . Money::format($min, $currency) . '.');
+        return new self('below_minimum', __('The minimum top-up is :value.', ['value' => Money::format($min, $currency)]));
     }
 }

@@ -38,7 +38,7 @@ class CategoryController extends Controller
 
         Category::create(['school_id' => $schoolId, 'name' => $name]);
 
-        return redirect()->route('admin.categories')->with('status', "Category “{$name}” added.");
+        return redirect()->route('admin.categories')->with('status', __('Category “:name” added.', ['name' => $name]));
     }
 
     public function rename(Request $request, Category $category)
@@ -52,7 +52,7 @@ class CategoryController extends Controller
 
         $category->update(['name' => $name]);
 
-        return redirect()->route('admin.categories')->with('status', 'Category renamed.');
+        return redirect()->route('admin.categories')->with('status', __('Category renamed.'));
     }
 
     public function toggle(Request $request, Category $category)
@@ -75,13 +75,13 @@ class CategoryController extends Controller
         $data = $request->validate(['into_id' => ['required', 'integer']]);
 
         if ((int) $data['into_id'] === (int) $category->id) {
-            return back()->withErrors(['category' => 'Choose a different category to merge into.']);
+            return back()->withErrors(['category' => __('Choose a different category to merge into.')]);
         }
 
         $target = Category::find($data['into_id']);   // limited to this school by the tenant scope
 
         if (! $target) {
-            return back()->withErrors(['category' => 'That category does not exist.']);
+            return back()->withErrors(['category' => __('That category does not exist.')]);
         }
 
         DB::transaction(function () use ($category, $target) {
@@ -99,7 +99,7 @@ class CategoryController extends Controller
             $category->delete();
         });
 
-        return redirect()->route('admin.categories')->with('status', "“{$category->name}” was merged into “{$target->name}”.");
+        return redirect()->route('admin.categories')->with('status', __('“:name” was merged into “:name2”.', ['name' => $category->name, 'name2' => $target->name]));
     }
 
     public function destroy(Request $request, Category $category)
@@ -107,19 +107,19 @@ class CategoryController extends Controller
         $this->schoolId($request);
 
         if (Product::where('category_id', $category->id)->exists() || StudentBan::where('category_id', $category->id)->exists()) {
-            return back()->withErrors(['category' => 'This category is in use. Merge it into another one instead.']);
+            return back()->withErrors(['category' => __('This category is in use. Merge it into another one instead.')]);
         }
 
         $category->delete();
 
-        return redirect()->route('admin.categories')->with('status', 'Category deleted.');
+        return redirect()->route('admin.categories')->with('status', __('Category deleted.'));
     }
 
     // ------------------------------------------------------------------ helpers
 
     private function schoolId(Request $request): int
     {
-        abort_unless($request->user()->school_id, 403, 'Log in as a school admin to manage categories.');
+        abort_unless($request->user()->school_id, 403, __('Log in as a school admin to manage categories.'));
 
         return (int) $request->user()->school_id;
     }
@@ -132,7 +132,7 @@ class CategoryController extends Controller
         foreach (Category::all() as $other) {
             if ($other->id !== $exceptId && Category::normalizedName($other->name) === $key) {
                 throw ValidationException::withMessages([
-                    'name' => "A category like “{$other->name}” already exists. Use that one.",
+                    'name' => __('A category like “:name” already exists. Use that one.', ['name' => $other->name]),
                 ]);
             }
         }

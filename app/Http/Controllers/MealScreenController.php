@@ -114,7 +114,7 @@ class MealScreenController extends Controller
 
     private function school(Request $request): School
     {
-        abort_unless($request->user()->school_id, 403, 'Log in as a school user to serve meals.');
+        abort_unless($request->user()->school_id, 403, __('Log in as a school user to serve meals.'));
 
         return School::findOrFail($request->user()->school_id);
     }

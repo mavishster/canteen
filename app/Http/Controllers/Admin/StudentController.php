@@ -39,7 +39,7 @@ class StudentController extends Controller
         $schoolId = $request->user()->school_id;
 
         if (! $schoolId) {
-            return back()->withErrors(['student_code' => 'Log in as a school admin to add students.']);
+            return back()->withErrors(['student_code' => __('Log in as a school admin to add students.')]);
         }
 
         $data = $request->validate([
@@ -51,7 +51,7 @@ class StudentController extends Controller
 
         Student::create($data + ['school_id' => $schoolId]);
 
-        return redirect()->route('admin.students')->with('status', 'Student added.');
+        return redirect()->route('admin.students')->with('status', __('Student added.'));
     }
 
     /** First card or replacement: one endpoint, the service decides. */

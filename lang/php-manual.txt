@@ -1,0 +1,8 @@
+Http/Controllers/Admin/CategoryController.php:66  needs a person: $category->is_active ? 'Category is available again.' : 'Category hidden: it can no longer be chosen for new products.'
+Http/Controllers/Admin/ConsentController.php:87  needs a person: $turnOn ? 'Consent is now compulsory: parents must accept the newest text to use the app.' : 'Consent is no longer compulsory.'
+Http/Controllers/Admin/MealController.php:115  needs a person: $mealType->is_active ? 'Meal switched on.' : 'Meal switched off.'
+Http/Controllers/Admin/MealController.php:122  needs a person: $mealPlan->is_active ? 'Plan switched on.' : 'Plan switched off.'
+Http/Controllers/Admin/ProductController.php:100  needs a person: $product->is_active ? 'Product shown on the till.' : 'Product hidden from the till.'
+Http/Controllers/Admin/ProductController.php:111  needs a person: $product->track_stock ? 'Stock tracking turned on. Add stock with Receive or Set.' : 'Stock tracking turned off.'
+Http/Controllers/SalesLogController.php:64  needs a person: $isManager ? 'Sale refunded. The money and the stock are back.' : 'Refund requested. A manager has to approve it.'
+Services/RuleService.php:173  needs a person: $closed->map(fn (Category $c) => $c->name . ' can only be bought ' . $this->describeHours($c) . '.')->implode(' ')

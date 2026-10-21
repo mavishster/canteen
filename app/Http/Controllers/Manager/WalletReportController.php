@@ -227,7 +227,7 @@ class WalletReportController extends Controller
     /** @return array{0: School, 1: Carbon, 2: Carbon, 3: Carbon, 4: Carbon} school, first day, last day (school time), and the UTC start and end */
     private function range(Request $request): array
     {
-        abort_unless($request->user()->school_id, 403, 'Log in as a school user to see reports.');
+        abort_unless($request->user()->school_id, 403, __('Log in as a school user to see reports.'));
 
         $request->validate([
             'from' => ['nullable', 'date_format:Y-m-d'],
@@ -246,11 +246,11 @@ class WalletReportController extends Controller
             : $to->copy()->startOfMonth();
 
         if ($from->gt($to)) {
-            throw ValidationException::withMessages(['from' => 'The start date cannot be after the end date.']);
+            throw ValidationException::withMessages(['from' => __('The start date cannot be after the end date.')]);
         }
 
         if (abs($from->diffInDays($to)) > 366) {
-            throw ValidationException::withMessages(['from' => 'Choose a period of at most one year.']);
+            throw ValidationException::withMessages(['from' => __('Choose a period of at most one year.')]);
         }
 
         return [$school, $from, $to, $from->copy()->utc(), $to->copy()->endOfDay()->utc()];

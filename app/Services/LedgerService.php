@@ -35,7 +35,7 @@ class LedgerService
     public function post(Account $account, LedgerType $type, int $amount, string $key, array $meta = []): LedgerEntry
     {
         if ($amount === 0) {
-            throw new InvalidArgumentException('Amount cannot be zero.');
+            throw new InvalidArgumentException(__('Amount cannot be zero.'));
         }
 
         $entry = DB::transaction(function () use ($account, $type, $amount, $key, $meta) {
@@ -54,7 +54,7 @@ class LedgerService
                     || $existing->amount !== $amount
                     || $existing->type !== $type
                 ) {
-                    throw new InvalidArgumentException("Idempotency key '{$key}' was already used for a different transaction.");
+                    throw new InvalidArgumentException(__('Idempotency key \':key\' was already used for a different transaction.', ['key' => $key]));
                 }
 
                 return $existing;
@@ -104,7 +104,7 @@ class LedgerService
     private function positive(int $amount): int
     {
         if ($amount <= 0) {
-            throw new InvalidArgumentException('Amount must be greater than zero.');
+            throw new InvalidArgumentException(__('Amount must be greater than zero.'));
         }
 
         return $amount;

@@ -70,8 +70,7 @@ class MealController extends ParentBaseController
             return response()->json(['message' => $e->getMessage(), 'reason' => 'invalid_key'], 422);
         } catch (InsufficientBalanceException $e) {
             return response()->json([
-                'message' => 'Not enough balance. Balance: ' . Money::format($e->balance, $school->currency)
-                    . ', needed: ' . Money::format($e->required, $school->currency) . '.',
+                'message' => __('Not enough balance. Balance: :value, needed: :value2.', ['value' => Money::format($e->balance, $school->currency), 'value2' => Money::format($e->required, $school->currency)]),
                 'reason' => 'insufficient_balance',
             ], 422);
         }

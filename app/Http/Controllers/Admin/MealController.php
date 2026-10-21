@@ -51,7 +51,7 @@ class MealController extends Controller
 
         if (($start === null) !== ($end === null) || ($start !== null && $start >= $end)) {
             throw ValidationException::withMessages([
-                'service_starts_at' => 'Set both collection times, with the start earlier than the end, or leave both empty.',
+                'service_starts_at' => __('Set both collection times, with the start earlier than the end, or leave both empty.'),
             ]);
         }
 
@@ -67,7 +67,7 @@ class MealController extends Controller
             'is_active' => true,
         ]);
 
-        return redirect()->route('admin.meals')->with('status', 'Meal added.');
+        return redirect()->route('admin.meals')->with('status', __('Meal added.'));
     }
 
     public function storePlan(Request $request)
@@ -84,14 +84,14 @@ class MealController extends Controller
         ]);
 
         if (isset($data['min_grade'], $data['max_grade']) && $data['max_grade'] < $data['min_grade']) {
-            throw ValidationException::withMessages(['max_grade' => 'The last grade cannot be lower than the first.']);
+            throw ValidationException::withMessages(['max_grade' => __('The last grade cannot be lower than the first.')]);
         }
 
         $mealType = MealType::where('is_active', true)->findOrFail($data['meal_type_id']);
         $price = Money::toMinor($data['price'], $school->currency);
 
         if ($price < 1) {
-            throw ValidationException::withMessages(['price' => 'The price is too small.']);
+            throw ValidationException::withMessages(['price' => __('The price is too small.')]);
         }
 
         MealPlan::create([
@@ -105,7 +105,7 @@ class MealController extends Controller
             'is_active' => true,
         ]);
 
-        return redirect()->route('admin.meals')->with('status', 'Plan added.');
+        return redirect()->route('admin.meals')->with('status', __('Plan added.'));
     }
 
     public function toggleType(MealType $mealType)
@@ -136,7 +136,7 @@ class MealController extends Controller
         $student = Student::where('student_code', trim($data['student_code']))->first();
 
         if (! $student) {
-            return back()->withErrors(['sell' => 'No student has that number.'])->withInput();
+            return back()->withErrors(['sell' => __('No student has that number.')])->withInput();
         }
 
         try {
@@ -144,17 +144,16 @@ class MealController extends Controller
         } catch (MealException | InvalidArgumentException $e) {
             return back()->withErrors(['sell' => $e->getMessage()])->withInput();
         } catch (InsufficientBalanceException $e) {
-            return back()->withErrors(['sell' => 'Not enough balance. Balance: ' . Money::format($e->balance, $school->currency)
-                . ', needed: ' . Money::format($e->required, $school->currency) . '.'])->withInput();
+            return back()->withErrors(['sell' => __('Not enough balance. Balance: :value, needed: :value2.', ['value' => Money::format($e->balance, $school->currency), 'value2' => Money::format($e->required, $school->currency)])])->withInput();
         }
 
         return redirect()->route('admin.meals')->with('status',
-            "{$student->name}: {$subscription->plan->name}, from {$subscription->valid_from->toDateString()} to {$subscription->expires_on->toDateString()}.");
+            __(':name: :name2, from :value to :value2.', ['name' => $student->name, 'name2' => $subscription->plan->name, 'value' => $subscription->valid_from->toDateString(), 'value2' => $subscription->expires_on->toDateString()]));
     }
 
     private function school(Request $request): School
     {
-        abort_unless($request->user()->school_id, 403, 'Log in as a school admin to manage meals.');
+        abort_unless($request->user()->school_id, 403, __('Log in as a school admin to manage meals.'));
 
         return School::findOrFail($request->user()->school_id);
     }

@@ -1,0 +1,82 @@
+[expr] views/admin/audit/index.blade.php: {{ $log->created_at->timezone($log->school?->timezone ?? 'UTC')->format('Y-m-d H:i') }}
+[mixed] views/admin/categories/hours.blade.php: Times are school time ({{ $school->timezone }}). A category with nothing set can be bought at any time. If the cart holds an item from a closed category, the till refuses the whole sale and says when it is open. These hours come on top of the school's general buying hours (Settings).
+[mixed] views/admin/categories/hours.blade.php: {{ $category->products_count }} product(s)
+[expr] views/admin/categories/index.blade.php: {{ $category->is_active ? 'Available' : 'Hidden' }}
+[expr] views/admin/categories/index.blade.php: {{ $category->is_active ? 'Hide' : 'Show' }}
+[mixed] views/admin/consent/index.blade.php: {{ $acceptedCount }} of {{ $total }} parents have accepted
+[mixed] views/admin/consent/index.blade.php: Publish {{ $document ? 'version ' . ($document->version + 1) : 'version 1' }}
+[mixed] views/admin/consent/index.blade.php: Not accepted yet (version {{ $document->version }})
+[expr] views/admin/consent/index.blade.php: {{ $required ? 'Compulsory' : 'Not compulsory' }}
+[expr] views/admin/consent/index.blade.php: {{ $required ? 'Stop asking parents to accept?' : 'From now on parents must accept the newest text to use the app. Continue?' }}
+[expr] views/admin/consent/index.blade.php: {{ $required ? 'Switch off' : 'Make compulsory' }}
+[expr] views/admin/consent/index.blade.php: {{ $document ? 'Version ' . $document->version : 'None published' }}
+[expr] views/admin/consent/index.blade.php: {{ $document ? 'Publish a new version' : 'Publish the first text' }}
+[expr] views/admin/consent/index.blade.php: {{ $total === 0 ? 'No parents yet.' : 'Everyone has accepted.' }}
+[mixed] views/admin/meals/index.blade.php: Price ({{ $symbol }})
+[mixed] views/admin/meals/index.blade.php: {{ $plan->mealType->name }} · {{ $plan->duration_months }} month(s) · {{ ($plan->min_grade === null && $plan->max_grade === null) ? 'whole school' : 'grades ' . ($plan->min_grade ?? 'first') . '–' . ($plan->max_grade ?? 'last') }}
+[expr] views/admin/meals/index.blade.php: {{ $type->is_active ? 'Switch off' : 'Switch on' }}
+[expr] views/admin/meals/index.blade.php: {{ $plan->is_active ? 'Switch off' : 'Switch on' }}
+[mixed] views/admin/products/index.blade.php: Price ({{ $currency === 'KHR' ? '៛' : '$' }})
+[mixed] views/admin/products/index.blade.php: {{ $product->category->name }} (hidden)
+[mixed] views/admin/products/index.blade.php: {{ $product->stock }} in stock
+[expr] views/admin/products/index.blade.php: {{ $currency === 'KHR' ? '៛' : '$' }}
+[expr] views/admin/products/index.blade.php: {{ $currency === 'KHR' ? '1' : '0.01' }}
+[expr] views/admin/products/index.blade.php: {{ $product->school->currency === 'KHR' ? '1' : '0.01' }}
+[expr] views/admin/products/index.blade.php: {{ $product->is_active ? 'On the till' : 'Hidden' }}
+[expr] views/admin/products/index.blade.php: {{ $product->is_active ? 'Hide' : 'Show' }}
+[mixed] views/admin/settings/index.blade.php: Daily max ({{ $symbol }})
+[mixed] views/admin/settings/index.blade.php: Weekly max ({{ $symbol }})
+[mixed] views/admin/settings/index.blade.php: Most one purchase may cost ({{ $symbol }})
+[mixed] views/admin/settings/index.blade.php: Times are in school time ({{ $school->timezone }}). With no time windows, the chosen days are open all day.
+[mixed] views/admin/settings/index.blade.php: Smallest top-up ({{ $symbol }})
+[mixed] views/admin/settings/index.blade.php: Low balance warning below ({{ $symbol }})
+[js] views/admin/students/index.blade.php: DOMContentLoaded
+[js] views/admin/students/index.blade.php: Replace card
+[js] views/admin/students/index.blade.php: Bind card
+[js] views/admin/students/index.blade.php: Something went wrong.
+[expr] views/admin/students/index.blade.php: {{ $card ? 'Replace card' : 'Bind card' }}
+[expr] views/admin/students/index.blade.php: {{ $card->status === 'active' ? 'Block' : 'Unblock' }}
+[mixed] views/admin/students/rules.blade.php: Code {{ $student->student_code }} @if ($student->grade) · Grade {{ $student->grade }} @endif
+[mixed] views/admin/students/rules.blade.php: Daily limit ({{ $symbol }})
+[mixed] views/admin/students/rules.blade.php: School maximum: {{ $fmt($caps['daily']) }}
+[mixed] views/admin/students/rules.blade.php: Weekly limit ({{ $symbol }})
+[mixed] views/admin/students/rules.blade.php: School maximum: {{ $fmt($caps['weekly']) }}
+[expr] views/admin/students/rules.blade.php: {{ $ban->category_id ? 'Category' : 'Product' }}
+[mixed] views/dashboard.blade.php: Welcome, {{ auth()->user()->name }}
+[mixed] views/dev/pay.blade.php: Pay {{ \App\Support\Money::format($topup->pay_amount, $topup->pay_currency) }}
+[expr] views/manager/refunds/index.blade.php: {{ $names[$r->requested_by] ?? 'Unknown' }}
+[mixed] views/manager/reports/balances.blade.php: {{ $zero }} empty
+[mixed] views/manager/reports/balances.blade.php: {{ $active->n ?? 0 }} wallets
+[mixed] views/manager/reports/balances.blade.php: {{ $inactive->n ?? 0 }} wallets: money to settle
+[mixed] views/manager/reports/balances.blade.php: {{ $belowLine }} active student(s) are below the school's low-balance line of {{ $fmt($line) }}.
+[mixed] views/manager/reports/balances.blade.php: Held at the start of {{ $from->format('j M Y') }}
+[mixed] views/manager/reports/balances.blade.php: Held at the end of {{ $to->format('j M Y') }}
+[expr] views/manager/reports/balances.blade.php: {{ $row->grade === null ? 'No grade' : 'Grade ' . $row->grade }}
+[expr] views/manager/reports/daily.blade.php: {{ $cashierNames[$row->cashier_id] ?? 'Unknown' }}
+[mixed] views/manager/reports/meals.blade.php: {{ $from->format('j M Y') }} – {{ $to->format('j M Y') }}. Counted by the school day each meal was served.
+[mixed] views/manager/reports/meals.blade.php: {{ $perMeal->get($type->id)->students ?? 0 }} different students · {{ $servedToday[$type->id] ?? 0 }} served today · {{ $withPlanToday[$type->id] ?? 0 }} have a plan today
+[mixed] views/manager/reports/meals.blade.php: Plans ending in the next {{ $endingDays }} days (not renewed)
+[mixed] views/manager/reports/reconciliation.blade.php: {{ $needReview }} top-up(s) need review: the bank reported a different amount than expected. Nothing was credited for them. See
+[mixed] views/manager/reports/reconciliation.blade.php: {{ $mismatched }} account(s) do not match their ledger! Stop and investigate before trusting the balances.
+[mixed] views/manager/reports/topups.blade.php: {{ $from->format('j M Y') }} – {{ $to->format('j M Y') }} · school time ({{ $school->timezone }}). A paid top-up counts on the day it was paid.
+[expr] views/super/schools/show.blade.php: {{ $locked ? 'Fixed: this school already has students or money.' : 'Can still be changed: the school is empty.' }}
+[expr] views/super/schools/show.blade.php: {{ $role ? ucfirst($role) : 'Disabled' }}
+[js] views/till/index.blade.php: DOMContentLoaded
+[js] views/till/index.blade.php: Out of stock
+[js] views/till/index.blade.php: Grade 
+[js] views/till/index.blade.php: Identified by student number
+[js] views/till/index.blade.php: Checkout failed
+[js] views/till/index.blade.php: No connection to the server. Please try again.
+[js] views/till/index.blade.php: Something went wrong (error 
+[js] views/till/meals.blade.php: DOMContentLoaded
+[js] views/till/meals.blade.php: No connection. Try again.
+[js] views/till/meals.blade.php: Something went wrong (
+[js] views/till/meals.blade.php: Student number 
+[js] views/till/meals.blade.php: Grade 
+[js] views/till/meals.blade.php: Record the meal for this student?
+[js] views/till/meals.blade.php: Yes, record
+[js] views/till/meals.blade.php: Meal collection failed
+[mixed] views/till/sales.blade.php: Sales · {{ $day->format('j F Y') }}
+[expr] views/till/sales.blade.php: {{ $isManager ? 'Refund now' : 'Request refund' }}
+[mixed] views/welcome.blade.php: v{{ app()->version() }}
+[expr] views/welcome.blade.php: {{ config('app.name', 'Laravel') }}

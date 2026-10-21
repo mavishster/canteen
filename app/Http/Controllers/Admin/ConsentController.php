@@ -64,7 +64,7 @@ class ConsentController extends Controller
             ? ' Every parent will be asked to accept it again.'
             : ' Consent is not compulsory yet: switch it on when you are ready.';
 
-        return redirect()->route('admin.consent')->with('status', "Version {$document->version} published." . $note);
+        return redirect()->route('admin.consent')->with('status', __('Version :version published.:note', ['version' => $document->version, 'note' => $note]));
     }
 
     /** Makes acceptance compulsory (or not). Needs a published text first. */
@@ -75,7 +75,7 @@ class ConsentController extends Controller
         $turnOn = ! $consent->required($school);
 
         if ($turnOn && ! $consent->current($school)) {
-            return back()->withErrors(['consent' => 'Publish a text first, then switch consent on.']);
+            return back()->withErrors(['consent' => __('Publish a text first, then switch consent on.')]);
         }
 
         $settings = $school->settings ?? [];
@@ -90,7 +90,7 @@ class ConsentController extends Controller
 
     private function school(Request $request): School
     {
-        abort_unless($request->user()->school_id, 403, 'Log in as a school admin to manage consent.');
+        abort_unless($request->user()->school_id, 403, __('Log in as a school admin to manage consent.'));
 
         return School::findOrFail($request->user()->school_id);
     }

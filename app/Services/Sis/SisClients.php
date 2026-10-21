@@ -11,7 +11,7 @@ final class SisClients
         return match (config('sis.driver')) {
             'database' => app(SisDatabaseClient::class),
             'fake' => app(FakeSisClient::class),
-            default => throw new InvalidArgumentException("Unknown SIS driver '" . config('sis.driver') . "'."),
+            default => throw new InvalidArgumentException(__('Unknown SIS driver \':value\'.', ['value' => config('sis.driver')])),
         };
     }
 }

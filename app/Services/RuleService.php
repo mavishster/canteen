@@ -46,7 +46,7 @@ class RuleService
             }
 
             if ($value <= 0) {
-                throw new InvalidArgumentException('A limit must be greater than zero, or null for no limit.');
+                throw new InvalidArgumentException(__('A limit must be greater than zero, or null for no limit.'));
             }
 
             $max = $school->capForGrade($kind, $student->grade);
@@ -65,7 +65,7 @@ class RuleService
     public function banProduct(Student $student, Product $product): StudentBan
     {
         if ((int) $product->school_id !== (int) $student->school_id) {
-            throw new InvalidArgumentException('That product belongs to another school.');
+            throw new InvalidArgumentException(__('That product belongs to another school.'));
         }
 
         return StudentBan::withoutGlobalScopes()->firstOrCreate([
@@ -78,7 +78,7 @@ class RuleService
     public function banCategory(Student $student, Category $category): StudentBan
     {
         if ((int) $category->school_id !== (int) $student->school_id) {
-            throw new InvalidArgumentException('That category belongs to another school.');
+            throw new InvalidArgumentException(__('That category belongs to another school.'));
         }
 
         return StudentBan::withoutGlobalScopes()->firstOrCreate([
@@ -106,7 +106,7 @@ class RuleService
         if ($max > 0 && $total > $max) {
             throw new RuleException(
                 'over_sale_limit',
-                'A single purchase cannot be more than ' . Money::format($max, $school->currency) . '.'
+                __('A single purchase cannot be more than :value.', ['value' => Money::format($max, $school->currency)])
             );
         }
     }

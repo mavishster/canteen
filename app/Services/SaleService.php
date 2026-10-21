@@ -55,7 +55,7 @@ class SaleService
         $school = School::findOrFail($schoolId);
 
         if (! data_get($school->settings, 'till.manual_entry', true)) {
-            throw new SaleException('manual_disabled', 'Selling by student number is switched off for this school. Please use the card.');
+            throw new SaleException('manual_disabled', __('Selling by student number is switched off for this school. Please use the card.'));
         }
 
         if ((int) $student->school_id !== $schoolId) {
@@ -94,12 +94,12 @@ class SaleService
 
             if ($existing) {
                 if ((int) $existing->account_id !== (int) $locked->id) {
-                    throw new InvalidArgumentException("Sale key '{$key}' was already used for a different account.");
+                    throw new InvalidArgumentException(__('Sale key \':key\' was already used for a different account.', ['key' => $key]));
                 }
 
                 $sameCart = $this->sameCart($existing, $lines);
                 if (! $sameCart) {
-                    throw new InvalidArgumentException("Sale key '{$key}' was already used for a different sale.");
+                    throw new InvalidArgumentException(__('Sale key \':key\' was already used for a different sale.', ['key' => $key]));
                 }
 
                 return $existing->load(['items', 'student', 'ledgerEntry']);

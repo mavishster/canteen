@@ -18,7 +18,7 @@ final class SisCardFormat
             'same' => $raw,
             'decimal_to_hex' => self::decimalToHex($raw),
             'decimal_to_hex_reversed' => self::reverseBytes(self::decimalToHex($raw)),
-            default => throw new InvalidArgumentException("Unknown SIS card format '{$mode}'."),
+            default => throw new InvalidArgumentException(__('Unknown SIS card format \':mode\'.', ['mode' => $mode])),
         };
     }
 

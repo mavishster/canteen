@@ -13,7 +13,7 @@ class CalendarController extends Controller
 {
     public function update(Request $request)
     {
-        abort_unless($request->user()->school_id, 403, 'Log in as a school admin to change the calendar.');
+        abort_unless($request->user()->school_id, 403, __('Log in as a school admin to change the calendar.'));
 
         $school = School::findOrFail($request->user()->school_id);
 
@@ -27,7 +27,7 @@ class CalendarController extends Controller
 
             if (! $date || $date->format('Y-m-d') !== $token) {
                 throw ValidationException::withMessages([
-                    'dates' => "'{$token}' is not a date. Write one date per line, like 2026-12-25.",
+                    'dates' => __('\':token\' is not a date. Write one date per line, like 2026-12-25.', ['token' => $token]),
                 ]);
             }
 
@@ -38,13 +38,13 @@ class CalendarController extends Controller
         sort($dates);
 
         if (count($dates) > 366) {
-            throw ValidationException::withMessages(['dates' => 'At most 366 closed days can be listed.']);
+            throw ValidationException::withMessages(['dates' => __('At most 366 closed days can be listed.')]);
         }
 
         $settings = $school->settings ?? [];
         $settings['calendar']['closed_dates'] = $dates;
         $school->update(['settings' => $settings]);
 
-        return redirect()->route('admin.meals')->with('status', count($dates) . ' closed day(s) saved.');
+        return redirect()->route('admin.meals')->with('status', __(':value closed day(s) saved.', ['value' => count($dates)]));
     }
 }

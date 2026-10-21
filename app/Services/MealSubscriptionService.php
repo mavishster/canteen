@@ -35,7 +35,7 @@ class MealSubscriptionService
     public function purchase(Student $student, int $planId, string $key, ?int $operatorId = null): MealSubscription
     {
         if ($key === '' || mb_strlen($key) > 64) {
-            throw new InvalidArgumentException('The purchase key must be between 1 and 64 characters.');
+            throw new InvalidArgumentException(__('The purchase key must be between 1 and 64 characters.'));
         }
 
         return DB::transaction(function () use ($student, $planId, $key, $operatorId) {

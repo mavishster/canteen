@@ -61,7 +61,7 @@ class StockService
     public function receive(Product $product, int $quantity, ?int $userId = null, ?string $note = null): StockMovement
     {
         if ($quantity <= 0) {
-            throw new InvalidArgumentException('The quantity must be greater than zero.');
+            throw new InvalidArgumentException(__('The quantity must be greater than zero.'));
         }
 
         return $this->move($product, 'received', fn (int $current) => $current + $quantity, $userId, $note);
@@ -71,7 +71,7 @@ class StockService
     public function count(Product $product, int $counted, ?int $userId = null, ?string $note = null): StockMovement
     {
         if ($counted < 0) {
-            throw new InvalidArgumentException('The counted stock cannot be negative.');
+            throw new InvalidArgumentException(__('The counted stock cannot be negative.'));
         }
 
         return $this->move($product, 'adjustment', fn () => $counted, $userId, $note);
@@ -83,7 +83,7 @@ class StockService
             $locked = Product::withoutGlobalScopes()->lockForUpdate()->findOrFail($product->id);
 
             if (! $locked->track_stock) {
-                throw new InvalidArgumentException('Stock is not tracked for this product. Turn on stock tracking first.');
+                throw new InvalidArgumentException(__('Stock is not tracked for this product. Turn on stock tracking first.'));
             }
 
             $after = $newStock($locked->stock);

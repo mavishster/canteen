@@ -12,7 +12,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         if (! config('sis.allow_local_parent_login', true)) {
-            return response()->json(['message' => 'Please sign in with your school account.'], 404);
+            return response()->json(['message' => __('Please sign in with your school account.')], 404);
         }
 
         $data = $request->validate([
@@ -26,7 +26,7 @@ class AuthController extends Controller
         // One message for every failure: never reveal which part was wrong
         if (! $user || ! Hash::check($data['password'], $user->password)
             || ! $user->school_id || ! $user->hasRole('parent')) {
-            return response()->json(['message' => 'These credentials do not match our records.'], 422);
+            return response()->json(['message' => __('These credentials do not match our records.')], 422);
         }
 
         $token = $user->createToken($data['device_name'] ?? 'parent app', ['parent'])->plainTextToken;

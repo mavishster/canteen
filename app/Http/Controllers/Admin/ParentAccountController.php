@@ -50,7 +50,7 @@ class ParentAccountController extends Controller
         ]);
         $parent->assignRole('parent');
 
-        return redirect()->route('admin.parents')->with('status', 'Parent account created. Give them the email and password.');
+        return redirect()->route('admin.parents')->with('status', __('Parent account created. Give them the email and password.'));
     }
 
     public function link(Request $request, User $parentUser)
@@ -66,14 +66,14 @@ class ParentAccountController extends Controller
             'student_id' => $student->id,
         ]);
 
-        return redirect()->route('admin.parents')->with('status', "{$student->name} linked to {$parentUser->name}.");
+        return redirect()->route('admin.parents')->with('status', __(':name linked to :name2.', ['name' => $student->name, 'name2' => $parentUser->name]));
     }
 
     public function unlink(GuardianLink $link)
     {
         $link->delete();
 
-        return redirect()->route('admin.parents')->with('status', 'Link removed.');
+        return redirect()->route('admin.parents')->with('status', __('Link removed.'));
     }
 
     /** Sets a new password and signs the parent out of every phone. */
@@ -86,12 +86,12 @@ class ParentAccountController extends Controller
         $parentUser->update(['password' => Hash::make($data['password'])]);
         $parentUser->tokens()->delete();
 
-        return redirect()->route('admin.parents')->with('status', "New password set for {$parentUser->name}.");
+        return redirect()->route('admin.parents')->with('status', __('New password set for :name.', ['name' => $parentUser->name]));
     }
 
     private function schoolId(Request $request): int
     {
-        abort_unless($request->user()->school_id, 403, 'Log in as a school admin to manage parents.');
+        abort_unless($request->user()->school_id, 403, __('Log in as a school admin to manage parents.'));
 
         return (int) $request->user()->school_id;
     }

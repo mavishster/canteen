@@ -13,13 +13,13 @@ class RuleException extends SaleException
             ? ' Buying hours: ' . implode(', ', array_map(fn ($w) => "{$w[0]}–{$w[1]}", $windows)) . '.'
             : '';
 
-        return new self('outside_hours', 'Purchases are not allowed at this time.' . $text);
+        return new self('outside_hours', __('Purchases are not allowed at this time.:text', ['text' => $text]));
     }
 
     /** @param array<int, string> $names */
     public static function bannedProducts(array $names): self
     {
-        return new self('banned_product', implode(', ', $names) . ' is not allowed for this student.');
+        return new self('banned_product', __(':value is not allowed for this student.', ['value' => implode(', ', $names)]));
     }
 
     public static function overLimit(string $kind, int $remaining, string $currency): self
@@ -29,7 +29,7 @@ class RuleException extends SaleException
 
         return new self(
             "over_{$kind}_limit",
-            "{$label} spending limit reached. Remaining {$period}: " . Money::format($remaining, $currency) . '.'
+            __(':label spending limit reached. Remaining :period: :value.', ['label' => $label, 'period' => $period, 'value' => Money::format($remaining, $currency)])
         );
     }
 
@@ -37,7 +37,7 @@ class RuleException extends SaleException
     {
         return new self(
             'limit_above_school_max',
-            "The {$kind} limit cannot be above the school maximum of " . Money::format($max, $currency) . '.'
+            __('The :kind limit cannot be above the school maximum of :value.', ['kind' => $kind, 'value' => Money::format($max, $currency)])
         );
     }
 }

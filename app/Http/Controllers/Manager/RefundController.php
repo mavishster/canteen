@@ -14,7 +14,7 @@ class RefundController extends Controller
 {
     public function index(Request $request)
     {
-        abort_unless($request->user()->school_id, 403, 'Log in as a school user to manage refunds.');
+        abort_unless($request->user()->school_id, 403, __('Log in as a school user to manage refunds.'));
 
         $school = School::findOrFail($request->user()->school_id);
 
@@ -50,7 +50,7 @@ class RefundController extends Controller
             return back()->withErrors(['refund' => $e->getMessage()]);
         }
 
-        return back()->with('status', 'Refund approved. The money and the stock are back.');
+        return back()->with('status', __('Refund approved. The money and the stock are back.'));
     }
 
     public function reject(Request $request, SaleRefund $refund, RefundService $refunds)
@@ -63,6 +63,6 @@ class RefundController extends Controller
             return back()->withErrors(['refund' => $e->getMessage()]);
         }
 
-        return back()->with('status', 'Refund request rejected.');
+        return back()->with('status', __('Refund request rejected.'));
     }
 }

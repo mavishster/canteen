@@ -13,7 +13,7 @@ final class Messengers
             'log' => app(LogMessenger::class),
             'fake' => app(FakePush::class),
             'none', null => null,
-            default => throw new InvalidArgumentException("Unknown push driver '" . config('messaging.push') . "'."),
+            default => throw new InvalidArgumentException(__('Unknown push driver \':value\'.', ['value' => config('messaging.push')])),
         };
     }
 
@@ -23,7 +23,7 @@ final class Messengers
             'log' => app(LogSmsSender::class),
             'fake' => app(FakeSms::class),
             'none', null => null,
-            default => throw new InvalidArgumentException("Unknown SMS driver '" . config('messaging.sms') . "'."),
+            default => throw new InvalidArgumentException(__('Unknown SMS driver \':value\'.', ['value' => config('messaging.sms')])),
         };
     }
 }

@@ -34,7 +34,7 @@ class TopUpController extends ParentBaseController
             return response()->json(['message' => $e->getMessage(), 'reason' => $e->reason], 422);
         } catch (LogicException) {
             // The gateway driver is not ready (or is switched off in this environment)
-            return response()->json(['message' => 'Online payments are not available yet.'], 503);
+            return response()->json(['message' => __('Online payments are not available yet.')], 503);
         }
 
         return response()->json($this->present($topup, $request), 201);

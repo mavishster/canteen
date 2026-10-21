@@ -13,11 +13,11 @@ class ConsentException extends RuntimeException
 
     public static function noDocument(): self
     {
-        return new self('no_document', 'The school has not published a text to accept yet.', 409);
+        return new self('no_document', __('The school has not published a text to accept yet.'), 409);
     }
 
     public static function versionChanged(int $current): self
     {
-        return new self('version_changed', "The text has changed. Please read version {$current} and accept that one.", 409);
+        return new self('version_changed', __('The text has changed. Please read version :current and accept that one.', ['current' => $current]), 409);
     }
 }

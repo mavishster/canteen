@@ -176,7 +176,7 @@ class ChildController extends ParentBaseController
         $card = $cards->currentCard($child);
 
         if (! $card) {
-            return response()->json(['message' => 'This student has no card yet.'], 422);
+            return response()->json(['message' => __('This student has no card yet.')], 422);
         }
 
         try {

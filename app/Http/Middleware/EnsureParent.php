@@ -21,7 +21,7 @@ class EnsureParent
         $user = $request->user();
 
         if (! $user || ! $user->school_id || ! $user->hasRole('parent')) {
-            return response()->json(['message' => 'This account cannot use the parent app.'], 403);
+            return response()->json(['message' => __('This account cannot use the parent app.')], 403);
         }
 
         try {
@@ -33,7 +33,7 @@ class EnsureParent
         if (! $request->routeIs('parent.consent', 'parent.consent.accept', 'parent.logout', 'parent.school', 'parent.language', 'parent.language.update')
             && app(ConsentService::class)->mustAccept($user)) {
             return response()->json([
-                'message' => "Please read and accept the school's terms first.",
+                'message' => __('Please read and accept the school\'s terms first.'),
                 'reason' => 'consent_required',
             ], 403);
         }

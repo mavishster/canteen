@@ -103,7 +103,7 @@ class SchoolController extends Controller
             return $school;
         });
 
-        return redirect()->route('super.schools.show', $school)->with('status', "School {$school->code} created.");
+        return redirect()->route('super.schools.show', $school)->with('status', __('School :code created.', ['code' => $school->code]));
     }
 
     public function show(School $school)
@@ -146,7 +146,7 @@ class SchoolController extends Controller
             if (filled($data[$field] ?? null) && $data[$field] !== $school->{$field}) {
                 if ($this->isLocked($school)) {
                     throw ValidationException::withMessages([
-                        $field => 'The ' . $field . ' cannot be changed once the school has students or money.',
+                        $field => __('The :field cannot be changed once the school has students or money.', ['field' => $field]),
                     ]);
                 }
 
@@ -191,7 +191,7 @@ class SchoolController extends Controller
             );
         }
 
-        return redirect()->route('super.schools.show', $school)->with('status', 'School saved.');
+        return redirect()->route('super.schools.show', $school)->with('status', __('School saved.'));
     }
 
     public function addAdmin(Request $request, School $school)
@@ -204,7 +204,7 @@ class SchoolController extends Controller
 
         $this->makeAdmin($school, $data['admin_name'], $data['admin_email'], $data['admin_password']);
 
-        return redirect()->route('super.schools.show', $school)->with('status', "{$data['admin_name']} is now an admin of {$school->name}.");
+        return redirect()->route('super.schools.show', $school)->with('status', __(':admin_name is now an admin of :name.', ['admin_name' => $data['admin_name'], 'name' => $school->name]));
     }
 
     /** For a school admin who is locked out. Signs the person out everywhere. */
@@ -224,7 +224,7 @@ class SchoolController extends Controller
             DB::table('sessions')->where('user_id', $user->id)->delete();
         }
 
-        return redirect()->route('super.schools.show', $school)->with('status', "New password set for {$user->name}. They were signed out everywhere.");
+        return redirect()->route('super.schools.show', $school)->with('status', __('New password set for :name. They were signed out everywhere.', ['name' => $user->name]));
     }
 
     // ------------------------------------------------------------------ helpers

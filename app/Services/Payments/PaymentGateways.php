@@ -10,10 +10,10 @@ final class PaymentGateways
     {
         return match ($name) {
             'fake' => app()->isProduction()
-                ? throw new InvalidArgumentException('The fake gateway is disabled in production.')
+                ? throw new InvalidArgumentException(__('The fake gateway is disabled in production.'))
                 : app(FakeGateway::class),
             'aba' => app(AbaPayWayGateway::class),
-            default => throw new InvalidArgumentException("Unknown payment gateway '{$name}'."),
+            default => throw new InvalidArgumentException(__('Unknown payment gateway \':name\'.', ['name' => $name])),
         };
     }
 
