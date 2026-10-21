@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function showFail(xhr) {
         var message = (xhr.responseJSON && xhr.responseJSON.message)
-            || (xhr.status === 0 ? 'No connection. Try again.' : 'Something went wrong (' + xhr.status + ').');
+            || (xhr.status === 0 ? __('No connection. Try again.') : 'Something went wrong (' + xhr.status + ').');
         var $p = panel('bg-danger text-white');
         $p.append($('<div class="display-3 fw-bold"></div>').text('✕ NO'));
         $p.append($('<div class="fs-3 mt-3"></div>').text(message));

@@ -24,17 +24,17 @@
         <div class="text-muted small">{{ __('Held in wallets now') }}</div><div class="fs-3 fw-bold">{{ $fmt($total) }}</div></div></div></div>
     <div class="col-md-3"><div class="card shadow-sm"><div class="card-body">
         <div class="text-muted small">{{ __('Wallets') }}</div><div class="fs-3">{{ $count }}</div>
-        <div class="small text-muted">{{ $zero }} empty</div></div></div></div>
+        <div class="small text-muted">{{ __(':count empty', ['count' => $zero]) }}</div></div></div></div>
     <div class="col-md-3"><div class="card shadow-sm"><div class="card-body">
         <div class="text-muted small">{{ __('Active students') }}</div><div class="fs-3">{{ $fmt($active->total ?? 0) }}</div>
-        <div class="small text-muted">{{ $active->n ?? 0 }} wallets</div></div></div></div>
+        <div class="small text-muted">{{ __(':count wallets', ['count' => $active->n ?? 0]) }}</div></div></div></div>
     <div class="col-md-3"><div class="card shadow-sm {{ ($inactive->total ?? 0) > 0 ? 'border-warning' : '' }}"><div class="card-body">
         <div class="text-muted small">{{ __('Inactive students (left school)') }}</div><div class="fs-3">{{ $fmt($inactive->total ?? 0) }}</div>
-        <div class="small text-muted">{{ $inactive->n ?? 0 }} wallets: money to settle</div></div></div></div>
+        <div class="small text-muted">{{ __(':count wallets: money to settle', ['count' => $inactive->n ?? 0]) }}</div></div></div></div>
 </div>
 
 <p class="text-muted">
-    {{ $belowLine }} active student(s) are below the school's low-balance line of {{ $fmt($line) }}.
+    {{ __(':count active student(s) are below the school\'s low-balance line of :value.', ['count' => $belowLine, 'value' => $fmt($line)]) }}
 </p>
 
 <div class="row g-4 mb-4">
@@ -45,7 +45,7 @@
             <tbody>
             @forelse ($byGrade as $row)
                 <tr>
-                    <td>{{ $row->grade === null ? 'No grade' : 'Grade ' . $row->grade }}</td>
+                    <td>{{ $row->grade === null ? __('No grade') : __('Grade :grade', ['grade' => $row->grade]) }}</td>
                     <td class="text-end">{{ $row->students }}</td>
                     <td class="text-end">{{ $fmt($row->total) }}</td>
                 </tr>
@@ -67,12 +67,12 @@
         </form>
         <table class="table bg-white align-middle">
             <tbody>
-                <tr><td>Held at the start of {{ $from->format('j M Y') }}</td><td class="text-end">{{ $fmt($opening) }}</td></tr>
+                <tr><td>{{ __('Held at the start of :date', ['date' => $from->format('j M Y')]) }}</td><td class="text-end">{{ $fmt($opening) }}</td></tr>
                 <tr><td>{{ __('+ Top-ups') }}</td><td class="text-end">{{ $fmt($move('topup')) }}</td></tr>
                 <tr><td>− Purchases (till and meal plans)</td><td class="text-end">{{ $fmt($move('purchase')) }}</td></tr>
                 <tr><td>{{ __('+ Refunds') }}</td><td class="text-end">{{ $fmt($move('refund')) }}</td></tr>
                 <tr><td>± Adjustments</td><td class="text-end">{{ $fmt($move('adjustment')) }}</td></tr>
-                <tr class="table-light fw-semibold"><td>Held at the end of {{ $to->format('j M Y') }}</td><td class="text-end">{{ $fmt($closing) }}</td></tr>
+                <tr class="table-light fw-semibold"><td>{{ __('Held at the end of :date', ['date' => $to->format('j M Y')]) }}</td><td class="text-end">{{ $fmt($closing) }}</td></tr>
             </tbody>
         </table>
         <p class="small text-muted">{{ __('The figures come from the money ledger, so they always add up. Purchases and adjustments show with a minus sign when money left the wallets.') }}</p>

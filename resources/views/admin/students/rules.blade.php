@@ -11,8 +11,7 @@
 
 <h1 class="h3 mb-1">{{ $student->name }}</h1>
 <p class="text-muted">
-    Code {{ $student->student_code }}
-    @if ($student->grade) · Grade {{ $student->grade }} @endif
+    {{ __('Code :code', ['code' => $student->student_code]) }} @if ($student->grade) · {{ __('Grade :grade', ['grade' => $student->grade]) }} @endif
 </p>
 
 @if ($errors->any())
@@ -32,18 +31,18 @@
         <form method="POST" action="{{ route('admin.students.limits', $student) }}" class="row g-3 align-items-start">
             @csrf
             <div class="col-md-4">
-                <label class="form-label" for="daily_limit">Daily limit ({{ $symbol }})</label>
+                <label class="form-label" for="daily_limit">{{ __('Daily limit (:symbol)', ['symbol' => $symbol]) }}</label>
                 <input id="daily_limit" name="daily_limit" type="number" min="0" step="{{ $step }}"
                        value="{{ old('daily_limit', $account->daily_limit !== null ? \App\Support\Money::toMajor($account->daily_limit, $currency) : '') }}"
                        class="form-control" placeholder="{{ __('No personal limit') }}">
-                <div class="form-text">School maximum: {{ $fmt($caps['daily']) }}</div>
+                <div class="form-text">{{ __('School maximum: :value', ['value' => $fmt($caps['daily'])]) }}</div>
             </div>
             <div class="col-md-4">
-                <label class="form-label" for="weekly_limit">Weekly limit ({{ $symbol }})</label>
+                <label class="form-label" for="weekly_limit">{{ __('Weekly limit (:symbol)', ['symbol' => $symbol]) }}</label>
                 <input id="weekly_limit" name="weekly_limit" type="number" min="0" step="{{ $step }}"
                        value="{{ old('weekly_limit', $account->weekly_limit !== null ? \App\Support\Money::toMajor($account->weekly_limit, $currency) : '') }}"
                        class="form-control" placeholder="{{ __('No personal limit') }}">
-                <div class="form-text">School maximum: {{ $fmt($caps['weekly']) }}</div>
+                <div class="form-text">{{ __('School maximum: :value', ['value' => $fmt($caps['weekly'])]) }}</div>
             </div>
             <div class="col-md-4 pt-md-4">
                 <button class="btn btn-primary mt-md-2">{{ __('Save limits') }}</button>
@@ -89,7 +88,7 @@
             <tbody>
             @forelse ($bans as $ban)
                 <tr>
-                    <td>{{ $ban->category_id ? 'Category' : 'Product' }}</td>
+                    <td>{{ $ban->category_id ? __('Category') : __('Product') }}</td>
                     <td>{{ $ban->category?->name ?? $ban->product?->name }}</td>
                     <td class="text-end">
                         <form method="POST" action="{{ route('admin.bans.delete', $ban) }}">

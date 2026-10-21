@@ -28,7 +28,7 @@
     <div class="alert alert-danger">@foreach ($errors->all() as $error)<div>{{ $error }}</div>@endforeach</div>
 @endif
 
-<p class="text-muted small">{{ $from->format('j M Y') }} – {{ $to->format('j M Y') }}. Counted by the school day each meal was served.</p>
+<p class="text-muted small">{{ $from->format('j M Y') }} – {{ $to->format('j M Y') }}. {{ __('Counted by the school day each meal was served.') }}</p>
 
 <div class="row g-3 mb-4">
     @forelse ($types as $type)
@@ -37,9 +37,7 @@
                 <div class="text-muted small">{{ $type->name }}{{ $type->is_active ? '' : ' (switched off)' }}</div>
                 <div class="fs-3">{{ $perMeal->get($type->id)->meals ?? 0 }} <span class="fs-6 text-muted">{{ __('meals in the period') }}</span></div>
                 <div class="small text-muted">
-                    {{ $perMeal->get($type->id)->students ?? 0 }} different students ·
-                    {{ $servedToday[$type->id] ?? 0 }} served today ·
-                    {{ $withPlanToday[$type->id] ?? 0 }} have a plan today
+                    {{ __(':count different students', ['count' => $perMeal->get($type->id)->students ?? 0]) }} · {{ __(':count served today', ['count' => $servedToday[$type->id] ?? 0]) }} · {{ __(':count have a plan today', ['count' => $withPlanToday[$type->id] ?? 0]) }}
                 </div>
             </div></div>
         </div>
@@ -69,7 +67,7 @@
     </div>
 
     <div class="col-lg-7">
-        <h2 class="h5">Plans ending in the next {{ $endingDays }} days (not renewed)</h2>
+        <h2 class="h5">{{ __('Plans ending in the next :days days (not renewed)', ['days' => $endingDays]) }}</h2>
         <table class="table table-sm bg-white align-middle">
             <thead class="table-light"><tr><th>{{ __('Student') }}</th><th>{{ __('Meal') }}</th><th>{{ __('Last day') }}</th></tr></thead>
             <tbody>

@@ -78,12 +78,12 @@
                             data-url="{{ route('admin.students.card', $student) }}"
                             data-name="{{ $student->name }}"
                             data-mode="{{ $card ? 'replace' : 'bind' }}">
-                        {{ $card ? 'Replace card' : 'Bind card' }}
+                        {{ $card ? __('Replace card') : __('Bind card') }}
                     </button>
                     @if ($card)
                         <button type="button" class="btn btn-sm btn-outline-secondary js-toggle-card"
                                 data-url="{{ route($card->status === 'active' ? 'admin.cards.block' : 'admin.cards.unblock', $card) }}">
-                            {{ $card->status === 'active' ? 'Block' : 'Unblock' }}
+                            {{ $card->status === 'active' ? __('Block') : __('Unblock') }}
                         </button>
                     @endif
                 </td>
@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var replacing = $btn.data('mode') === 'replace';
 
         $('#cardStudent').text($btn.data('name'));
-        $('#cardMode').text(replacing ? 'Replace card' : 'Bind card');
+        $('#cardMode').text(replacing ? __('Replace card') : __('Bind card'));
         $('#cardReplaceNote').toggleClass('d-none', !replacing);
         $('#cardUid').val('');
         $('#cardError').addClass('d-none');
@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', function () {
         $.post(currentUrl, { uid: $('#cardUid').val() })
             .done(function () { location.reload(); })
             .fail(function (xhr) {
-                var message = (xhr.responseJSON && xhr.responseJSON.message) || 'Something went wrong.';
+                var message = (xhr.responseJSON && xhr.responseJSON.message) || __('Something went wrong.');
                 $('#cardError').text(message).removeClass('d-none');
                 $('#cardUid').trigger('select');
             });
@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function () {
         $.post($(this).data('url'))
             .done(function () { location.reload(); })
             .fail(function (xhr) {
-                alert((xhr.responseJSON && xhr.responseJSON.message) || 'Something went wrong.');
+                alert((xhr.responseJSON && xhr.responseJSON.message) || __('Something went wrong.'));
             });
     });
 });

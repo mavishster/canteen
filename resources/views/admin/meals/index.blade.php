@@ -60,7 +60,7 @@
                         <td class="text-end">
                             <form method="POST" action="{{ route('admin.meals.types.toggle', $type) }}">
                                 @csrf
-                                <button class="btn btn-sm btn-outline-secondary">{{ $type->is_active ? 'Switch off' : 'Switch on' }}</button>
+                                <button class="btn btn-sm btn-outline-secondary">{{ $type->is_active ? __('Switch off') : __('Switch on') }}</button>
                             </form>
                         </td>
                     </tr>
@@ -107,7 +107,7 @@
                         <input id="max_grade" name="max_grade" type="number" min="0" max="12" value="{{ old('max_grade') }}" class="form-control" placeholder="{{ __('all') }}">
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label" for="price">Price ({{ $symbol }})</label>
+                        <label class="form-label" for="price">{{ __('Price (:symbol)', ['symbol' => $symbol]) }}</label>
                         <input id="price" name="price" type="number" min="0" step="{{ $step }}" value="{{ old('price') }}" class="form-control" required>
                     </div>
                     <div class="col-md-3"><button class="btn btn-primary w-100">{{ __('Add plan') }}</button></div>
@@ -120,14 +120,13 @@
                     <tr class="{{ $plan->is_active && $plan->mealType->is_active ? '' : 'text-muted' }}">
                         <td>{{ $plan->name }}
                             <div class="small text-muted">
-                                {{ $plan->mealType->name }} · {{ $plan->duration_months }} month(s) ·
-                                {{ ($plan->min_grade === null && $plan->max_grade === null) ? 'whole school' : 'grades ' . ($plan->min_grade ?? 'first') . '–' . ($plan->max_grade ?? 'last') }}
+                                {{ $plan->mealType->name }} · {{ __(':count month(s)', ['count' => $plan->duration_months]) }} · {{ ($plan->min_grade === null && $plan->max_grade === null) ? __('whole school') : __('grades :from–:to', ['from' => $plan->min_grade ?? __('first'), 'to' => $plan->max_grade ?? __('last')]) }}
                             </div></td>
                         <td class="text-end">{{ $fmt($plan->price) }}</td>
                         <td class="text-end">
                             <form method="POST" action="{{ route('admin.meals.plans.toggle', $plan) }}">
                                 @csrf
-                                <button class="btn btn-sm btn-outline-secondary">{{ $plan->is_active ? 'Switch off' : 'Switch on' }}</button>
+                                <button class="btn btn-sm btn-outline-secondary">{{ $plan->is_active ? __('Switch off') : __('Switch on') }}</button>
                             </form>
                         </td>
                     </tr>

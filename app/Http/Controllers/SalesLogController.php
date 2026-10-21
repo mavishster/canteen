@@ -62,7 +62,7 @@ class SalesLogController extends Controller
         }
 
         return back()->with('status', $isManager
-            ? 'Sale refunded. The money and the stock are back.'
-            : 'Refund requested. A manager has to approve it.');
+            ? __('Sale refunded. The money and the stock are back.')
+            : __('Refund requested. A manager has to approve it.'));
     }
 }

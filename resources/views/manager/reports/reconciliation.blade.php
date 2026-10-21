@@ -23,15 +23,14 @@
 
 @if ($needReview > 0)
     <div class="alert alert-danger">
-        {{ $needReview }} top-up(s) need review: the bank reported a different amount than expected. Nothing was credited for them.
-        See <a href="{{ route('admin.topups') }}">{{ __('Top-ups') }}</a>.
+        {{ __(':count top-up(s) need review: the bank reported a different amount than expected. Nothing was credited for them. See', ['count' => $needReview]) }} <a href="{{ route('admin.topups') }}">{{ __('Top-ups') }}</a>.
     </div>
 @endif
 
 @if ($mismatched === 0)
     <div class="alert alert-success">{{ __('Every balance matches its ledger.') }}</div>
 @else
-    <div class="alert alert-danger fw-semibold">{{ $mismatched }} account(s) do not match their ledger! Stop and investigate before trusting the balances.</div>
+    <div class="alert alert-danger fw-semibold">{{ __(':count account(s) do not match their ledger! Stop and investigate before trusting the balances.', ['count' => $mismatched]) }}</div>
 @endif
 
 <div class="row g-4">

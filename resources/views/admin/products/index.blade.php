@@ -37,7 +37,7 @@
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <label class="form-label" for="price">Price ({{ $currency === 'KHR' ? '៛' : '$' }})</label>
+                    <label class="form-label" for="price">{{ __('Price (:symbol)', ['symbol' => $currency === 'KHR' ? '៛' : '$']) }}</label>
                     <input id="price" name="price" type="number" step="{{ $currency === 'KHR' ? '1' : '0.01' }}" min="0" value="{{ old('price') }}" class="form-control" required>
                 </div>
                 <div class="col-md-2">
@@ -80,7 +80,7 @@
                                 <option value="{{ $category->id }}" @selected((int) $product->category_id === (int) $category->id)>{{ $category->name }}</option>
                             @endforeach
                             @if ($product->category && ! $categories->contains('id', $product->category_id))
-                                <option value="{{ $product->category_id }}" selected disabled>{{ $product->category->name }} (hidden)</option>
+                                <option value="{{ $product->category_id }}" selected disabled>{{ __(':name (hidden)', ['name' => $product->category->name]) }}</option>
                             @endif
                         </select>
                         <button class="btn btn-sm btn-outline-secondary">{{ __('Save') }}</button>
@@ -98,7 +98,7 @@
                 <td>
                     @if ($product->track_stock)
                         <span class="badge fs-6 {{ $product->stock <= 0 ? 'bg-danger' : ($product->stock <= 5 ? 'bg-warning text-dark' : 'bg-success') }}">
-                            {{ $product->stock }} in stock
+                            {{ __(':count in stock', ['count' => $product->stock]) }}
                         </span>
                         <div class="d-flex gap-1 mt-2">
                             <form method="POST" action="{{ route('admin.products.receive', $product) }}" class="d-flex gap-1">
@@ -125,13 +125,13 @@
                 </td>
                 <td>
                     <span class="badge {{ $product->is_active ? 'bg-success' : 'bg-secondary' }}">
-                        {{ $product->is_active ? 'On the till' : 'Hidden' }}
+                        {{ $product->is_active ? __('On the till') : __('Hidden') }}
                     </span>
                 </td>
                 <td class="text-end">
                     <form method="POST" action="{{ route('admin.products.toggle', $product) }}">
                         @csrf
-                        <button class="btn btn-sm btn-outline-secondary">{{ $product->is_active ? 'Hide' : 'Show' }}</button>
+                        <button class="btn btn-sm btn-outline-secondary">{{ $product->is_active ? __('Hide') : __('Show') }}</button>
                     </form>
                 </td>
             </tr>

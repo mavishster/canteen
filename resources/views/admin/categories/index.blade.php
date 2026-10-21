@@ -47,7 +47,7 @@
                 </td>
                 <td class="text-end">{{ $category->products_count }}</td>
                 <td class="text-end">{{ $banCount }}</td>
-                <td><span class="badge {{ $category->is_active ? 'bg-success' : 'bg-secondary' }}">{{ $category->is_active ? 'Available' : 'Hidden' }}</span></td>
+                <td><span class="badge {{ $category->is_active ? 'bg-success' : 'bg-secondary' }}">{{ $category->is_active ? __('Available') : __('Hidden') }}</span></td>
                 <td>
                     @if ($categories->count() > 1)
                         <form method="POST" action="{{ route('admin.categories.merge', $category) }}" class="d-flex gap-1"
@@ -66,7 +66,7 @@
                 <td class="text-end text-nowrap">
                     <form method="POST" action="{{ route('admin.categories.toggle', $category) }}" class="d-inline">
                         @csrf
-                        <button class="btn btn-sm btn-outline-secondary">{{ $category->is_active ? 'Hide' : 'Show' }}</button>
+                        <button class="btn btn-sm btn-outline-secondary">{{ $category->is_active ? __('Hide') : __('Show') }}</button>
                     </form>
                     @if ($category->products_count === 0 && $banCount === 0)
                         <form method="POST" action="{{ route('admin.categories.delete', $category) }}" class="d-inline"

@@ -64,7 +64,7 @@
             <tbody>
             @forelse ($cashierRows as $row)
                 <tr>
-                    <td>{{ $cashierNames[$row->cashier_id] ?? 'Unknown' }}</td>
+                    <td>{{ $cashierNames[$row->cashier_id] ?? __('Unknown') }}</td>
                     <td class="text-end">{{ $row->sales }}</td>
                     <td class="text-end">{{ $fmt($row->total) }}</td>
                 </tr>

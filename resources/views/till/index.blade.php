@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 $btn.append(
                     $('<div class="small"></div>')
                         .addClass(soldOut ? 'text-danger' : 'text-muted')
-                        .text(soldOut ? 'Out of stock' : p.stock + ' left')
+                        .text(soldOut ? __('Out of stock') : p.stock + ' left')
                 );
             }
 
@@ -263,7 +263,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function onPaid(res) {
         $('#okStudent').text(res.student.name);
-        $('#okVia').text(res.identified_by === 'manual' ? 'Identified by student number' : '');
+        $('#okVia').text(res.identified_by === 'manual' ? __('Identified by student number') : '');
         $('#okTotal').text(res.total_formatted);
         $('#okBalance').text(res.balance_formatted);
 
@@ -293,7 +293,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         var message = (xhr.responseJSON && xhr.responseJSON.message)
             || (xhr.status === 0
-                ? 'No connection to the server. Please try again.'
+                ? __('No connection to the server. Please try again.')
                 : 'Something went wrong (error ' + xhr.status + '). Please try again.');
 
         $('#errMessage').text(message);

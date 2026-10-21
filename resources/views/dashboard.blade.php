@@ -2,7 +2,7 @@
 @section('title', __('Dashboard'))
 
 @section('content')
-<h1 class="h3 mb-4">Welcome, {{ auth()->user()->name }}</h1>
+<h1 class="h3 mb-4">{{ __('Welcome, :name', ['name' => auth()->user()->name]) }}</h1>
 
 @if (auth()->user()->roles->isEmpty())
     <div class="alert alert-warning">{{ __('Your account has no role yet. Ask an administrator to assign one.') }}</div>

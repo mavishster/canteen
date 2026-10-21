@@ -170,7 +170,7 @@ class RuleService
 
         throw new RuleException(
             'category_closed',
-            $closed->map(fn (Category $c) => $c->name . ' can only be bought ' . $this->describeHours($c) . '.')->implode(' ')
+            $closed->map(fn (Category $c) => $this->closedMessage($c))->implode(' ')
         );
     }
 
@@ -194,20 +194,27 @@ class RuleService
         return true;
     }
 
-    private function describeHours(Category $category): string
+    /** "Snacks can only be bought between 12:00 and 13:00 on Mon, Wed." in the person's language. */
+    private function closedMessage(Category $category): string
     {
-        $names = [1 => 'Mon', 2 => 'Tue', 3 => 'Wed', 4 => 'Thu', 5 => 'Fri', 6 => 'Sat', 7 => 'Sun'];
-        $parts = [];
+        $dayNames = [1 => __('Mon'), 2 => __('Tue'), 3 => __('Wed'), 4 => __('Thu'), 5 => __('Fri'), 6 => __('Sat'), 7 => __('Sun')];
+        $hasTime = $category->sell_from !== null && $category->sell_to !== null;
+        $days = ! empty($category->sell_days)
+            ? implode(', ', array_map(fn ($d) => $dayNames[(int) $d] ?? $d, $category->sell_days))
+            : null;
 
-        if ($category->sell_from !== null && $category->sell_to !== null) {
-            $parts[] = 'between ' . substr((string) $category->sell_from, 0, 5) . ' and ' . substr((string) $category->sell_to, 0, 5);
-        }
+        $values = [
+            'name' => $category->name,
+            'from' => substr((string) $category->sell_from, 0, 5),
+            'to' => substr((string) $category->sell_to, 0, 5),
+            'days' => (string) $days,
+        ];
 
-        if (! empty($category->sell_days)) {
-            $parts[] = 'on ' . implode(', ', array_map(fn ($d) => $names[(int) $d] ?? $d, $category->sell_days));
-        }
-
-        return implode(' ', $parts);
+        return match (true) {
+            $hasTime && $days !== null => __(':name can only be bought between :from and :to on :days.', $values),
+            $hasTime => __(':name can only be bought between :from and :to.', $values),
+            default => __(':name can only be bought on :days.', $values),
+        };
     }
 
     private function assertNoBans(Student $student, array $lines): void

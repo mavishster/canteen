@@ -63,7 +63,7 @@ class CategoryController extends Controller
 
         return redirect()->route('admin.categories')->with(
             'status',
-            $category->is_active ? 'Category is available again.' : 'Category hidden: it can no longer be chosen for new products.'
+            $category->is_active ? __('Category is available again.') : __('Category hidden: it can no longer be chosen for new products.')
         );
     }
 

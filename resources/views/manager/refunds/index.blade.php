@@ -27,7 +27,7 @@
                 <td>{{ $r->sale->student->name }}</td>
                 <td class="small">{{ $r->sale->items->map(fn ($i) => $i->quantity . '× ' . $i->name)->implode(', ') }}</td>
                 <td class="text-end">{{ $fmt($r->sale->total) }}</td>
-                <td>{{ $names[$r->requested_by] ?? 'Unknown' }}<div class="small text-muted">{{ $when($r->created_at) }}</div></td>
+                <td>{{ $names[$r->requested_by] ?? __('Unknown') }}<div class="small text-muted">{{ $when($r->created_at) }}</div></td>
                 <td>{{ $r->reason }}</td>
                 <td>
                     <form method="POST" action="{{ route('manager.refunds.approve', $r) }}" class="d-flex gap-1">

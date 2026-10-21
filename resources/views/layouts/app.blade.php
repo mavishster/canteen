@@ -8,6 +8,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
+    @include('layouts.i18n-js')
 @auth
     <nav class="navbar navbar-expand navbar-dark bg-dark px-3">
         <a class="navbar-brand" href="{{ route('dashboard') }}">{{ config('app.name') }}</a>

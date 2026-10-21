@@ -1,7 +1,7 @@
 @php
     $symbol = $school->currency === 'KHR' ? '៛' : '$';
     $step = $school->currency === 'KHR' ? '1' : '0.01';
-    $dayNames = [1 => 'Mon', 2 => 'Tue', 3 => 'Wed', 4 => 'Thu', 5 => 'Fri', 6 => 'Sat', 7 => 'Sun'];
+    $dayNames = [1 => __('Mon'), 2 => __('Tue'), 3 => __('Wed'), 4 => __('Thu'), 5 => __('Fri'), 6 => __('Sat'), 7 => __('Sun')];
     $chosenDays = array_map('intval', (array) old('days', $days));
 @endphp
 @extends('layouts.app')
@@ -48,7 +48,7 @@
             </p>
             <table class="table align-middle">
                 <thead class="table-light">
-                    <tr><th>{{ __('Grades') }}</th><th style="width: 30%">Daily max ({{ $symbol }})</th><th style="width: 30%">Weekly max ({{ $symbol }})</th></tr>
+                    <tr><th>{{ __('Grades') }}</th><th style="width: 30%">{{ __('Daily max (:symbol)', ['symbol' => $symbol]) }}</th><th style="width: 30%">{{ __('Weekly max (:symbol)', ['symbol' => $symbol]) }}</th></tr>
                 </thead>
                 <tbody>
                 @foreach ($bands as $i => $band)
@@ -63,7 +63,7 @@
 
             <div class="row g-3">
                 <div class="col-md-5">
-                    <label class="form-label" for="max_sale">Most one purchase may cost ({{ $symbol }})</label>
+                    <label class="form-label" for="max_sale">{{ __('Most one purchase may cost (:symbol)', ['symbol' => $symbol]) }}</label>
                     <input id="max_sale" name="max_sale" type="number" min="0" step="{{ $step }}" value="{{ old('max_sale', $values['max_sale']) }}" class="form-control" placeholder="{{ __('no limit') }}">
                     <div class="form-text">
                         {{ __('A lost or copied card can then never empty the account in one go. The till refuses a sale above this amount.') }}
@@ -82,7 +82,7 @@
                 <label class="form-check-label" for="restrict_hours">{{ __('Only allow purchases at set times') }}</label>
             </div>
 
-            <p class="text-muted small">Times are in school time ({{ $school->timezone }}). With no time windows, the chosen days are open all day.</p>
+            <p class="text-muted small">{{ __('Times are in school time (:timezone). With no time windows, the chosen days are open all day.', ['timezone' => $school->timezone]) }}</p>
 
             <div class="mb-3">
                 @foreach ($dayNames as $number => $label)
@@ -114,7 +114,7 @@
         <div class="card-header fw-semibold">{{ __('Top-ups') }}</div>
         <div class="card-body row g-3">
             <div class="col-md-4">
-                <label class="form-label" for="topup_min">Smallest top-up ({{ $symbol }})</label>
+                <label class="form-label" for="topup_min">{{ __('Smallest top-up (:symbol)', ['symbol' => $symbol]) }}</label>
                 <input id="topup_min" name="topup_min" type="number" min="0" step="{{ $step }}" value="{{ old('topup_min', $values['topup_min']) }}" class="form-control">
                 <div class="form-text">{{ __('Small top-ups lose too much to card fees. Parents cannot pay less than this.') }}</div>
             </div>
@@ -130,7 +130,7 @@
         <div class="card-header fw-semibold">{{ __('Alerts to parents') }}</div>
         <div class="card-body row g-3">
             <div class="col-md-5">
-                <label class="form-label" for="low_balance">Low balance warning below ({{ $symbol }})</label>
+                <label class="form-label" for="low_balance">{{ __('Low balance warning below (:symbol)', ['symbol' => $symbol]) }}</label>
                 <input id="low_balance" name="low_balance" type="number" min="0" step="{{ $step }}" value="{{ old('low_balance', $values['low_balance']) }}" class="form-control">
                 <div class="form-text">{{ __('The default for every child. Parents can change it for their own child. 0 switches the warning off.') }}</div>
             </div>

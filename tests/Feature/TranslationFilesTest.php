@@ -20,7 +20,9 @@ it('keeps the :placeholders of a phrase in its Khmer', function () {
         preg_match_all('/:[a-z_]+/', (string) $phrase, $in);
 
         foreach ($in[0] as $placeholder) {
-            expect($khmer)->toContain($placeholder, "the Khmer for \"{$phrase}\" lost {$placeholder}");
+            expect(str_contains((string) $khmer, $placeholder))->toBeTrue(
+                "the Khmer for \"{$phrase}\" lost {$placeholder}",
+            );
         }
     }
 });

@@ -52,7 +52,7 @@
             </select>
         </div>
         <div class="col-md-4 form-text align-self-end">
-            {{ $locked ? 'Fixed: this school already has students or money.' : 'Can still be changed: the school is empty.' }}
+            {{ $locked ? __('Fixed: this school already has students or money.') : __('Can still be changed: the school is empty.') }}
         </div>
 
         <div class="col-md-4">
@@ -80,7 +80,7 @@
             @php $role = $person->roles->first()?->name; @endphp
             <tr class="{{ $role ? '' : 'text-muted' }}">
                 <td>{{ $person->name }}<div class="small text-muted">{{ $person->email }}</div></td>
-                <td>{{ $role ? ucfirst($role) : 'Disabled' }}</td>
+                <td>{{ $role ? __(ucfirst($role)) : __('Disabled') }}</td>
                 <td>
                     <form method="POST" action="{{ route('super.schools.password', [$school, $person]) }}" class="d-flex gap-1">
                         @csrf

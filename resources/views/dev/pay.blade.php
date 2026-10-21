@@ -8,7 +8,7 @@
 
         <div class="card shadow-sm">
             <div class="card-body p-4">
-                <h1 class="h4 mb-3">Pay {{ \App\Support\Money::format($topup->pay_amount, $topup->pay_currency) }}</h1>
+                <h1 class="h4 mb-3">{{ __('Pay :value', ['value' => \App\Support\Money::format($topup->pay_amount, $topup->pay_currency)]) }}</h1>
                 <dl class="row mb-4">
                     <dt class="col-5">{{ __('Student') }}</dt><dd class="col-7">{{ $topup->student->name }}</dd>
                     <dt class="col-5">{{ __('Will be credited') }}</dt><dd class="col-7">{{ \App\Support\Money::format($topup->amount, $topup->school->currency) }}</dd>

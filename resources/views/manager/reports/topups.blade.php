@@ -31,7 +31,7 @@
     <div class="alert alert-danger">@foreach ($errors->all() as $error)<div>{{ $error }}</div>@endforeach</div>
 @endif
 
-<p class="text-muted small">{{ $from->format('j M Y') }} – {{ $to->format('j M Y') }} · school time ({{ $school->timezone }}). A paid top-up counts on the day it was paid.</p>
+<p class="text-muted small">{{ $from->format('j M Y') }} – {{ $to->format('j M Y') }} · {{ __('school time (:timezone). A paid top-up counts on the day it was paid.', ['timezone' => $school->timezone]) }}</p>
 
 <div class="row g-3 mb-4">
     <div class="col-md-3"><div class="card shadow-sm"><div class="card-body">

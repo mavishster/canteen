@@ -97,7 +97,7 @@ class ProductController extends Controller
         $product->update(['is_active' => ! $product->is_active]);
 
         return redirect()->route('admin.products')
-            ->with('status', $product->is_active ? 'Product shown on the till.' : 'Product hidden from the till.');
+            ->with('status', $product->is_active ? __('Product shown on the till.') : __('Product hidden from the till.'));
     }
 
     // ----------------------------------------------------------------- stock
@@ -108,7 +108,7 @@ class ProductController extends Controller
 
         return redirect()->route('admin.products')->with(
             'status',
-            $product->track_stock ? 'Stock tracking turned on. Add stock with Receive or Set.' : 'Stock tracking turned off.'
+            $product->track_stock ? __('Stock tracking turned on. Add stock with Receive or Set.') : __('Stock tracking turned off.')
         );
     }
 

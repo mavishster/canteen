@@ -112,14 +112,14 @@ class MealController extends Controller
     {
         $mealType->update(['is_active' => ! $mealType->is_active]);
 
-        return redirect()->route('admin.meals')->with('status', $mealType->is_active ? 'Meal switched on.' : 'Meal switched off.');
+        return redirect()->route('admin.meals')->with('status', $mealType->is_active ? __('Meal switched on.') : __('Meal switched off.'));
     }
 
     public function togglePlan(MealPlan $mealPlan)
     {
         $mealPlan->update(['is_active' => ! $mealPlan->is_active]);
 
-        return redirect()->route('admin.meals')->with('status', $mealPlan->is_active ? 'Plan switched on.' : 'Plan switched off.');
+        return redirect()->route('admin.meals')->with('status', $mealPlan->is_active ? __('Plan switched on.') : __('Plan switched off.'));
     }
 
     /** Sells a plan to a student from their wallet (until parents do it themselves in the app). */

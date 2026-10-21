@@ -84,7 +84,7 @@ class ConsentController extends Controller
 
         return redirect()->route('admin.consent')->with(
             'status',
-            $turnOn ? 'Consent is now compulsory: parents must accept the newest text to use the app.' : 'Consent is no longer compulsory.'
+            $turnOn ? __('Consent is now compulsory: parents must accept the newest text to use the app.') : __('Consent is no longer compulsory.')
         );
     }
 

@@ -6,7 +6,7 @@
 
 @section('content')
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-    <h1 class="h3 mb-0">Sales · {{ $day->format('j F Y') }}</h1>
+    <h1 class="h3 mb-0">{{ __('Sales') }} · {{ $day->format('j F Y') }}</h1>
     @if ($isManager)
         <form method="GET" class="d-flex gap-2">
             <input type="date" name="date" value="{{ $day->toDateString() }}" class="form-control" onchange="this.form.submit()">
@@ -44,7 +44,7 @@
                         <form method="POST" action="{{ route('till.sales.refund', $sale) }}" class="d-flex gap-1">
                             @csrf
                             <input name="reason" class="form-control form-control-sm" placeholder="{{ __('Reason') }}" maxlength="255" required>
-                            <button class="btn btn-sm btn-outline-danger text-nowrap">{{ $isManager ? 'Refund now' : 'Request refund' }}</button>
+                            <button class="btn btn-sm btn-outline-danger text-nowrap">{{ $isManager ? __('Refund now') : __('Request refund') }}</button>
                         </form>
                         @if ($refund && $refund->status === 'rejected')
                             <div class="small text-muted mt-1">{{ __('The last request was rejected.') }}</div>

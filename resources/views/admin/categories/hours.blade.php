@@ -1,5 +1,5 @@
 @php
-    $dayNames = [1 => 'Mon', 2 => 'Tue', 3 => 'Wed', 4 => 'Thu', 5 => 'Fri', 6 => 'Sat', 7 => 'Sun'];
+    $dayNames = [1 => __('Mon'), 2 => __('Tue'), 3 => __('Wed'), 4 => __('Thu'), 5 => __('Fri'), 6 => __('Sat'), 7 => __('Sun')];
 @endphp
 @extends('layouts.app')
 @section('title', __('Selling hours'))
@@ -15,9 +15,7 @@
 @endif
 
 <p class="text-muted">
-    Times are school time ({{ $school->timezone }}). A category with nothing set can be bought at any time.
-    If the cart holds an item from a closed category, the till refuses the whole sale and says when it is open.
-    These hours come on top of the school's general buying hours (Settings).
+    {{ __('Times are school time (:timezone).', ['timezone' => $school->timezone]) }} {{ __('A category with nothing set can be bought at any time. If the cart holds an item from a closed category, the till refuses the whole sale and says when it is open. These hours come on top of the school\'s general buying hours (Settings).') }}
 </p>
 
 <div class="table-responsive">
@@ -34,7 +32,7 @@
             <tr class="{{ $category->is_active ? '' : 'text-muted' }}">
                 <td>
                     {{ $category->name }}
-                    <div class="small text-muted">{{ $category->products_count }} product(s)</div>
+                    <div class="small text-muted">{{ __(':count product(s)', ['count' => $category->products_count]) }}</div>
                     @if ($category->hasSellingHours())
                         <span class="badge bg-warning text-dark">{{ __('restricted') }}</span>
                     @endif
