@@ -146,7 +146,7 @@ class SchoolController extends Controller
             if (filled($data[$field] ?? null) && $data[$field] !== $school->{$field}) {
                 if ($this->isLocked($school)) {
                     throw ValidationException::withMessages([
-                        $field => __('The :field cannot be changed once the school has students or money.', ['field' => $field]),
+                        $field => __('The :field cannot be changed once the school has students or money.', ['field' => __($field)]),
                     ]);
                 }
 

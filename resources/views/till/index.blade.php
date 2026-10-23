@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 $btn.append(
                     $('<div class="small"></div>')
                         .addClass(soldOut ? 'text-danger' : 'text-muted')
-                        .text(soldOut ? __('Out of stock') : p.stock + ' left')
+                        .text(soldOut ? __('Out of stock') : __(':count left', {count: p.stock}))
                 );
             }
 
@@ -179,13 +179,13 @@ document.addEventListener('DOMContentLoaded', function () {
         var ids = cartIds();
 
         if (!ids.length) {
-            $list.append('<li class="list-group-item text-muted">The cart is empty</li>');
+            $list.append($('<li class="list-group-item text-muted"></li>').text(__('The cart is empty')));
         }
 
         ids.forEach(function (id) {
             var p = byId[id];
             var atMax = p.track_stock && cart[id] >= p.stock;
-            var sub = money(p.price * cart[id]) + (atMax ? ' · all that is in stock' : '');
+            var sub = money(p.price * cart[id]) + (atMax ? ' · ' + __('all that is in stock') : '');
             var $li = $('<li class="list-group-item d-flex justify-content-between align-items-center"></li>');
 
             $li.append(
@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function () {
         pendingCode = res.student.code;
         $('#confirmCode').text(res.student.code);
         $('#confirmName').text(res.student.name);
-        $('#confirmGrade').text(res.student.grade ? 'Grade ' + res.student.grade : '');
+        $('#confirmGrade').text(res.student.grade ? __('Grade :grade', {grade: res.student.grade}) : '');
         $('#confirmTotal').text(money(cartTotal()));
         show('confirm');   // no button is focused on purpose: a stray Enter must not confirm
     }
@@ -294,7 +294,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var message = (xhr.responseJSON && xhr.responseJSON.message)
             || (xhr.status === 0
                 ? __('No connection to the server. Please try again.')
-                : 'Something went wrong (error ' + xhr.status + '). Please try again.');
+                : __('Something went wrong (error :status). Please try again.', {status: xhr.status}));
 
         $('#errMessage').text(message);
         show('err');   // the sale key is kept: a retry of the same sale can never charge twice

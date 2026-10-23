@@ -23,6 +23,7 @@ use Throwable;
 /**
  * Turns money movements into messages for the child's parents. It runs on the queue and only after the
  * database commit, and it never lets a notification problem touch the money.
+ * Each parent gets the text in the language they chose (a queued job has no request to ask).
  */
 class SendWalletNotifications implements ShouldQueue
 {
@@ -66,26 +67,58 @@ class SendWalletNotifications implements ShouldQueue
         $data = ['student_id' => $student->id];
 
         foreach ($parents as $parent) {
-            if ($type === 'topup' && $parent->notify_topup) {
-                $this->send($parent, $student, $entry, 'topup', 'Top-up received',
-                    "{$child}: {$fmt($entry->amount)} added. Balance: {$balance}.", $data);
-            }
-
-            if ($type === 'purchase') {
-                if ($parent->notify_purchase) {
-                    $this->send($parent, $student, $entry, 'purchase', 'Purchase',
-                        "{$child} spent {$fmt(abs($entry->amount))}: {$this->items($entry)}. Balance: {$balance}.", $data);
+            $this->inLanguageOf($parent, function () use ($parent, $student, $entry, $account, $school, $type, $child, $fmt, $balance, $data) {
+                if ($type === 'topup' && $parent->notify_topup) {
+                    $this->send(
+                        $parent, $student, $entry, 'topup', __('Top-up received'),
+                        __(':child: :amount added. Balance: :balance.', ['child' => $child, 'amount' => $fmt($entry->amount), 'balance' => $balance]),
+                        $data
+                    );
                 }
 
-                // Only the moment the balance crosses the line, not every purchase below it
-                $threshold = LowBalance::thresholdFor($account->low_balance_threshold, $school);
-                $before = $entry->balance_after - $entry->amount;   // amount is negative for a purchase
+                if ($type === 'purchase') {
+                    if ($parent->notify_purchase) {
+                        $this->send(
+                            $parent, $student, $entry, 'purchase', __('Purchase'),
+                            __(':child spent :amount: :items. Balance: :balance.', [
+                                'child' => $child,
+                                'amount' => $fmt(abs($entry->amount)),
+                                'items' => $this->items($entry),
+                                'balance' => $balance,
+                            ]),
+                            $data
+                        );
+                    }
 
-                if ($parent->notify_low_balance && $threshold > 0 && $before >= $threshold && $entry->balance_after < $threshold) {
-                    $this->send($parent, $student, $entry, 'low_balance', 'Low balance',
-                        "{$child}'s balance is {$balance}. Time to top up.", $data);
+                    // Only the moment the balance crosses the line, not every purchase below it
+                    $threshold = LowBalance::thresholdFor($account->low_balance_threshold, $school);
+                    $before = $entry->balance_after - $entry->amount;   // amount is negative for a purchase
+
+                    if ($parent->notify_low_balance && $threshold > 0 && $before >= $threshold && $entry->balance_after < $threshold) {
+                        $this->send(
+                            $parent, $student, $entry, 'low_balance', __('Low balance'),
+                            __(':child\'s balance is :balance. Time to top up.', ['child' => $child, 'balance' => $balance]),
+                            $data
+                        );
+                    }
                 }
-            }
+            });
+        }
+    }
+
+    /** Runs the callback with the language this parent chose (or the school's default), then puts the language back. */
+    private function inLanguageOf(User $parent, callable $callback): void
+    {
+        $supported = array_keys((array) config('locales.supported'));
+        $locale = in_array($parent->locale, $supported, true) ? $parent->locale : (string) config('locales.default', 'en');
+
+        $previous = app()->getLocale();
+        app()->setLocale($locale);
+
+        try {
+            $callback();
+        } finally {
+            app()->setLocale($previous);
         }
     }
 
@@ -95,7 +128,7 @@ class SendWalletNotifications implements ShouldQueue
 
         return $sale
             ? $sale->items->map(fn ($i) => "{$i->quantity}× {$i->name}")->implode(', ')
-            : ($entry->description ?: 'canteen purchase');
+            : ($entry->description ?: __('canteen purchase'));
     }
 
     /** @param array<string, mixed> $data */

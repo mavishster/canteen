@@ -27,7 +27,7 @@
                 <label class="form-label" for="role">{{ __('Role') }}</label>
                 <select id="role" name="role" class="form-select" required>
                     @foreach ($roles as $role)
-                        <option value="{{ $role }}" @selected(old('role') === $role)>{{ ucfirst($role) }}</option>
+                        <option value="{{ $role }}" @selected(old('role') === $role)>{{ __(ucfirst($role)) }}</option>
                     @endforeach
                 </select>
             </div>
@@ -58,7 +58,7 @@
                     <div class="small text-muted">{{ $person->email }}</div></td>
                 <td>
                     @if ($role)
-                        <span class="badge bg-primary">{{ ucfirst($role) }}</span>
+                        <span class="badge bg-primary">{{ __(ucfirst($role)) }}</span>
                     @else
                         <span class="badge bg-secondary">{{ __('Disabled') }}</span>
                     @endif
@@ -69,7 +69,7 @@
                             @csrf
                             <select name="role" class="form-select form-select-sm">
                                 @foreach ($roles as $option)
-                                    <option value="{{ $option }}" @selected($role === $option)>{{ ucfirst($option) }}</option>
+                                    <option value="{{ $option }}" @selected($role === $option)>{{ __(ucfirst($option)) }}</option>
                                 @endforeach
                             </select>
                             <button class="btn btn-sm btn-outline-primary">{{ __('Set') }}</button>
@@ -96,7 +96,7 @@
                             @csrf
                             <select name="role" class="form-select form-select-sm" style="width: 110px">
                                 @foreach ($roles as $option)
-                                    <option value="{{ $option }}">{{ ucfirst($option) }}</option>
+                                    <option value="{{ $option }}">{{ __(ucfirst($option)) }}</option>
                                 @endforeach
                             </select>
                             <input name="password" type="text" minlength="12" class="form-control form-control-sm" style="width: 150px" placeholder="{{ __('New password') }}" autocomplete="off" required>

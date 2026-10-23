@@ -9,11 +9,13 @@ class RuleException extends SaleException
     /** @param array<int, array{0:string,1:string}> $windows */
     public static function outsideHours(array $windows): self
     {
-        $text = $windows
-            ? ' Buying hours: ' . implode(', ', array_map(fn ($w) => "{$w[0]}–{$w[1]}", $windows)) . '.'
-            : '';
+        $message = $windows
+            ? __('Purchases are not allowed at this time. Buying hours: :hours.', [
+                'hours' => implode(', ', array_map(fn ($w) => "{$w[0]}–{$w[1]}", $windows)),
+            ])
+            : __('Purchases are not allowed at this time.');
 
-        return new self('outside_hours', __('Purchases are not allowed at this time.:text', ['text' => $text]));
+        return new self('outside_hours', $message);
     }
 
     /** @param array<int, string> $names */
@@ -24,12 +26,13 @@ class RuleException extends SaleException
 
     public static function overLimit(string $kind, int $remaining, string $currency): self
     {
-        $label = $kind === 'daily' ? 'Daily' : 'Weekly';
-        $period = $kind === 'daily' ? 'today' : 'this week';
+        $value = Money::format($remaining, $currency);
 
         return new self(
             "over_{$kind}_limit",
-            __(':label spending limit reached. Remaining :period: :value.', ['label' => $label, 'period' => $period, 'value' => Money::format($remaining, $currency)])
+            $kind === 'daily'
+                ? __('Daily spending limit reached. Remaining today: :value.', ['value' => $value])
+                : __('Weekly spending limit reached. Remaining this week: :value.', ['value' => $value])
         );
     }
 
@@ -37,7 +40,7 @@ class RuleException extends SaleException
     {
         return new self(
             'limit_above_school_max',
-            __('The :kind limit cannot be above the school maximum of :value.', ['kind' => $kind, 'value' => Money::format($max, $currency)])
+            __('The :kind limit cannot be above the school maximum of :value.', ['kind' => __($kind), 'value' => Money::format($max, $currency)])
         );
     }
 }

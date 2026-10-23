@@ -58,7 +58,7 @@ class Menu
     private function groupOf(string $name): ?string
     {
         return match (true) {
-            str_starts_with($name, 'admin.') => 'Admin',
+            str_starts_with($name, 'admin.') => 'Administration',
             str_starts_with($name, 'manager.') => 'Reports',
             default => null,
         };

@@ -36,7 +36,7 @@
         <select id="entity" name="entity" class="form-select form-select-sm">
             <option value="">{{ __('Everything') }}</option>
             @foreach ($entities as $entity)
-                <option value="{{ $entity }}" @selected(request('entity') === $entity)>{{ ucfirst(str_replace('_', ' ', $entity)) }}</option>
+                <option value="{{ $entity }}" @selected(request('entity') === $entity)>{{ __(ucfirst(str_replace('_', ' ', $entity))) }}</option>
             @endforeach
         </select>
     </div>

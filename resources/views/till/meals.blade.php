@@ -114,9 +114,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function showFail(xhr) {
         var message = (xhr.responseJSON && xhr.responseJSON.message)
-            || (xhr.status === 0 ? __('No connection. Try again.') : 'Something went wrong (' + xhr.status + ').');
+            || (xhr.status === 0 ? __('No connection. Try again.') : __('Something went wrong (:status).', {status: xhr.status}));
         var $p = panel('bg-danger text-white');
-        $p.append($('<div class="display-3 fw-bold"></div>').text('✕ NO'));
+        $p.append($('<div class="display-3 fw-bold"></div>').text('✕ ' + __('NO')));
         $p.append($('<div class="fs-3 mt-3"></div>').text(message));
         scheduleClear(3000);
     }
@@ -125,12 +125,12 @@ document.addEventListener('DOMContentLoaded', function () {
         waiting = { identifier: identifier, key: key, code: student.code };
         clearTimeout(timer);   // a typed number waits for a person: no timer
         var $p = panel('bg-light text-dark');
-        $p.append($('<div class="text-muted"></div>').text('Student number ' + student.code));
+        $p.append($('<div class="text-muted"></div>').text(__('Student number :code', {code: student.code})));
         $p.append($('<div class="display-5 fw-bold"></div>').text(student.name));
-        if (student.grade) { $p.append($('<div class="fs-4 text-muted"></div>').text('Grade ' + student.grade)); }
-        $p.append($('<div class="fs-4 mt-3 mb-4"></div>').text('Record the meal for this student?'));
-        $('<button type="button" class="btn btn-success btn-lg me-2 js-yes"></button>').text('Yes, record').appendTo($p);
-        $('<button type="button" class="btn btn-outline-secondary btn-lg js-no"></button>').text('No').appendTo($p);
+        if (student.grade) { $p.append($('<div class="fs-4 text-muted"></div>').text(__('Grade :grade', {grade: student.grade}))); }
+        $p.append($('<div class="fs-4 mt-3 mb-4"></div>').text(__('Record the meal for this student?')));
+        $('<button type="button" class="btn btn-success btn-lg me-2 js-yes"></button>').text(__('Yes, record')).appendTo($p);
+        $('<button type="button" class="btn btn-outline-secondary btn-lg js-no"></button>').text(__('No')).appendTo($p);
     }
 
     function send(identifier, confirmCode, key) {

@@ -45,7 +45,7 @@ class MealException extends RuntimeException
 
     public static function noSubscription(string $meal): self
     {
-        return new self('no_subscription', __('No active :meal plan.', ['meal' => $meal]));
+        return new self('no_subscription', __('No active :meal plan.', ['meal' => __($meal)]));
     }
 
     public static function alreadyCollected(string $at): self

@@ -60,7 +60,7 @@ class StaffController extends Controller
             [], ['role' => $data['role']], $schoolId, $user
         );
 
-        return redirect()->route('admin.staff')->with('status', __(':name can now sign in as :role.', ['name' => $user->name, 'role' => $data['role']]));
+        return redirect()->route('admin.staff')->with('status', __(':name can now sign in as :role.', ['name' => $user->name, 'role' => __($data['role'])]));
     }
 
     public function role(Request $request, User $staffUser)
@@ -88,7 +88,7 @@ class StaffController extends Controller
             ['role' => $previous], ['role' => $data['role']], (int) $staffUser->school_id, $staffUser
         );
 
-        return back()->with('status', __(':name is now :role.', ['name' => $staffUser->name, 'role' => $data['role']]));
+        return back()->with('status', __(':name is now :role.', ['name' => $staffUser->name, 'role' => __($data['role'])]));
     }
 
     public function password(Request $request, User $staffUser)
@@ -150,7 +150,7 @@ class StaffController extends Controller
             [], ['role' => $data['role']], (int) $staffUser->school_id, $staffUser
         );
 
-        return back()->with('status', __(':name is active again as :role.', ['name' => $staffUser->name, 'role' => $data['role']]));
+        return back()->with('status', __(':name is active again as :role.', ['name' => $staffUser->name, 'role' => __($data['role'])]));
     }
 
     // ------------------------------------------------------------------ helpers

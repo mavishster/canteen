@@ -121,7 +121,7 @@ it('groups admin pages under Admin and report pages under Reports', function () 
     $entries = app(Menu::class)->for(mnUser(mnSchool(), 'admin'));
     $groups = collect($entries)->where('type', 'group')->pluck('label')->all();
 
-    expect($groups)->toContain('Admin')->toContain('Reports');
+    expect($groups)->toContain('Administration')->toContain('Reports');
 });
 
 it('turns a dropdown with one link into that link', function () {

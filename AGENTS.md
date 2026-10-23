@@ -148,3 +148,11 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 - After the feature tests pass, ask the user to run the complete suite with `php artisan test --compact`.
 
 </laravel-boost-guidelines>
+
+## Translation, menu and audit rules
+- All text a person reads is `__('English text')` with `:placeholders` for values. Never build a sentence by joining strings and values.
+- After adding text: `php artisan canteen:i18n:missing --write`, add the Khmer to `lang/km.json`, keep every `:placeholder` in the Khmer.
+- `./vendor/bin/pest` must stay green: it includes guard tests that fail on plain English in views and PHP messages.
+- Menu links live in `config/menu.php`; permissions come from the route's `role:` middleware, not from the view.
+- Admin-accountable model changes are recorded by `AuditRecorder` (register the model); other actions call `AuditRecorder::log()`.
+- Read `HANDOFF.md` ("State after step 34") before changing anything.

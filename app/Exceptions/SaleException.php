@@ -25,7 +25,7 @@ class SaleException extends RuntimeException
     {
         return new self(
             'out_of_stock',
-            $available > 0 ? "{$name}: only {$available} left." : "{$name} is out of stock."
+            $available > 0 ? __(':name: only :count left.', ['name' => $name, 'count' => $available]) : __(':name is out of stock.', ['name' => $name])
         );
     }
 }

@@ -56,7 +56,7 @@ class I18nMissing extends Command
             $phrases[] = (string) ($item['label'] ?? '');
             $phrases[] = (string) ($item['group'] ?? '');
         }
-        array_push($phrases, 'Admin', 'Reports', 'Language');
+        array_push($phrases, 'Admin', 'Administration', 'Reports', 'Language');
 
         return collect($phrases)
             ->filter(fn ($p) => $p !== '')
