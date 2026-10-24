@@ -18,6 +18,7 @@ use Spatie\Permission\Models\Role;
 class CheckCanteen extends Command
 {
     use \App\Console\Commands\Concerns\ChecksConsent;
+    use \App\Console\Commands\Concerns\ChecksOperations;
 
     protected $signature = 'canteen:check {--json : Print the results as JSON (for a monitoring tool)}';
 
@@ -40,6 +41,7 @@ class CheckCanteen extends Command
         $this->checkDatabase();
         $this->checkAccounts($production);
         $this->checkConsent($production);
+        $this->checkOperations($production);
 
         if ($this->option('json')) {
             $this->line(json_encode($this->results, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
@@ -222,8 +224,6 @@ class CheckCanteen extends Command
                 : "Queue driver is '{$queue}'. Make sure `php artisan queue:work` runs all the time (Supervisor or systemd)."
         );
 
-        $this->add('WARN', 'Scheduler', 'Make sure the server runs `* * * * * php artisan schedule:run` (reconciles top-ups and more).');
-        $this->add('WARN', 'Backups', 'Make sure the database is backed up every day and a restore has been tried.');
     }
 
     private function checkDatabase(): void

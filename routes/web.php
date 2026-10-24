@@ -85,3 +85,7 @@ require __DIR__ . '/meal-reports.php';
 require __DIR__ . '/super.php';
 
 require __DIR__ . '/locale.php';
+
+require __DIR__ . '/card-import.php';
+
+require __DIR__ . '/health.php';

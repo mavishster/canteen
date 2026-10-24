@@ -31,3 +31,6 @@ Set `APP_LOCALE=km` in `.env` for a school whose staff mostly read Khmer.
 - The parent mobile app (the API is ready: `docs/parent-api.md`).
 - A native Khmer speaker must read `lang/km.json` and `lang/km/*.php`, above all the words about money, refunds and parents' rights, and the school must have its consent text reviewed by a legal adviser.
 - Translation leftovers: JavaScript sentences built from pieces, English words that arrive inside placeholders (role names, daily/weekly), and the push/SMS texts (they need the parent's saved language). `php artisan canteen:i18n:manual --write` lists what is left to convert by hand.
+
+### Operations (step 38)
+`canteen:check` now verifies the scheduler, the queue worker and the daily backup through heartbeats (table `heartbeats`), and `GET /health` (token) serves a monitor. Setup, Supervisor, backup, restore and off-site copy: `docs/operations.md`.

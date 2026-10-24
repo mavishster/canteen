@@ -32,5 +32,6 @@ return [
         ['route' => 'manager.reports.balances', 'label' => 'Balances'],
         ['route' => 'manager.reports.reconciliation', 'label' => 'Reconciliation'],
         ['route' => 'manager.refunds', 'label' => 'Refunds'],
+        ['route' => 'admin.cards.import', 'label' => 'Import cards'],
     ],
 ];
